@@ -15,7 +15,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-# [optional] Download the dataset
+## [optional] Download the dataset
 
 To get the original dataset run :
 

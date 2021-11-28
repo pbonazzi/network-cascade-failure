@@ -4,7 +4,7 @@
 
 ## 1. Reproducibility
 
-[Follow these instructions](./docs/01_reproduce_res.md) to setup the environment and download the dataset.
+[Follow these instructions](./docs/01_reproduce_res.md) to set up a local repo and the environment.
 
 ## 2. Reference 
 
