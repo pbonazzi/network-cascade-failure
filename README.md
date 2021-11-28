@@ -1,4 +1,4 @@
-# Welcome to the network cascade failure
+# Welcome to network cascade failure
 
 [research question, model]
 
