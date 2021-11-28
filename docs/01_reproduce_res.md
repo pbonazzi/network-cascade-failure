@@ -3,13 +3,13 @@
 Clone the repository
 
 ```
-
+git clone https://github.com/pbonazzi/21-11-network-cascade-failure.git
+cd 21-11-network-cascade-failure
 ```
 
 Set up the environment 
 
 ```
-cd 21-11-network-cascade-failure
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
