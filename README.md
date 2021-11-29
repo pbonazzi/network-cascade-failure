@@ -13,9 +13,9 @@ Hyeongkyun Kim 21-732-797
 Pietro Bonazzi 17-200-635
 Songyi Han 18-796-847
 
-:page_with_curl: Paper [on arXiv]()    
-:pencil: Blog [on Towards Data Science]()    
-:movie_camera: Video [on YouTube]()   
+:page_with_curl: Paper [on Github](./)    
+:pencil: Presentation [on Github](./)    
+:movie_camera: Video [on YouTube](./)   
 
 ```
 @article{uzh2021transp,

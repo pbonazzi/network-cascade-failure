@@ -1,31 +1,17 @@
+# %%
+import sys
 import networkx as nx
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 import numpy as np
+import json
 
+# %%
 
-def load_graph(filepath):
-    try:
-        return nx.read_gml(filepath)
-    except nx.NetworkXError:
-        return nx.read_graphml(filepath)
+import generation as rndm
+import cascadeflr as cas
 
+# %%
+N, n1, n2 = rndm.new_network(5, 3)
+A = cas.attack_network(N, n1, n2, 0.8)
 
-def draw_graph(graph, filename):
-    pos = nx.spring_layout(graph)
-    plt.figure(3, figsize=(10, 8))
-    plt.title(filename)
-    nx.draw(graph, with_labels=False, node_size=50, pos=pos)
-    plt.show()
-
-
-def degree_vec(graph):
-    return np.asarray([d for d in dict(graph.degree()).values()])
-
-
-path = "data/gml/multigraph.gml"
-
-paris = load_graph(path)
-
-# draw_graph(paris, "Paris")
-
-print("DEGREE VECTOR : ", degree_vec(paris))
+print(":)")
