@@ -8,12 +8,24 @@ cd 21-11-network-cascade-failure
 ```
 
 Set up the environment 
-
+Linux/macOS
 ```
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Windows
+
+```
+virtualenv --python C:\Path\To\Python\python.exe venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+```
+
+
+
 
 ## [optional] Download the dataset
 
