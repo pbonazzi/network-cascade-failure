@@ -5,9 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def foreign_neighbors(node, G):
+def foreign_neighbors(node,G):
     """
-
+    
     Find the set of all neighbor nodes that initially came from a different network
 
     Parameters
@@ -53,7 +53,7 @@ def cascade_fail(G, g1, g2, target, verbose):
 
     # remove neighboring nodes from the other network
     num = G.nodes[target]['num']
-    foreign_nodes = foreign_neighbors(G, target)
+    foreign_nodes = foreign_neighbors(target,G)
 
     for neigh in foreign_nodes:
         G2.remove_node(neigh)

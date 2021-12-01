@@ -3,26 +3,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 import powerlaw
 
-def add_3Dpos_attributes (G,z_pos=1):
-    """ Generate (x,y,z) coordinates for each node
+def nodeSetting (G,layer=1):
+    """ Generate (x,y,z) coordinates, Node ID and Attribute Setting for cascade methods
 
     (x,y) coordinates follow the networkx spring layout.
-    z coordinates(Layer) is given as a parameter 'z_pos'
+    z coordinates(Layer) is given as a parameter 'layer'
     Save (x,y,z) coordinates as an attribute of node named '3D_pos'
     This information is used for drawing interdependent graph
 
     Parameters
     ----------
     G : Network Graph
-    z_pos : Layer of this graph
+    layer : Layer of this graph
     
     """    
     pos = nx.spring_layout(G)
     for node in pos.keys():
-        pos[node] = np.append(pos[node],z_pos)
+        pos[node] = np.append(pos[node],layer)
     nx.set_node_attributes(G,pos,name='3D_pos')
 
-    return
+    for e in G.edges():
+        G.edges[e]['num'] = layer
+    for node in G.nodes():
+        G.nodes[node]['num'] = layer
+
+    mapping = {}
+    for node in G.nodes():
+        mapping[node] = str(layer) + '-' + str(node)
+    
+    H = nx.relabel_nodes(G, mapping)
+
+    return H
 
 def SF_powerlaw_exp (G):
     """ Calculate gamma value of power-law degree distribution
@@ -43,68 +54,57 @@ def SF_powerlaw_exp (G):
 
     return alpha
 
-
-def networkER_w_3Dpos(N, avgdegree, z_pos=1):
+def networkER_w_3Dpos(N, avgdegree, layer=1):
     """ Create Erdos-Renyi Network with 3D position attribute
 
     Parameters
     ----------
     N : Number of nodes
     avgdegree : Expected average degree
-    z_pos : Layer of this graph (refer to the method 'add_3Dpos_attributes')
+    layer : Layer of this graph (refer to the method 'nodeSetting')
 
     Returns
     -------
-    ER : Networkx Graph
+    H : ER Networkx Graph
 
     """    
 
-    ER = nx.erdos_renyi_graph(N, avgdegree/N)
-    add_3Dpos_attributes(ER,z_pos)
+    G = nx.erdos_renyi_graph(N, avgdegree/N)
+    H = nodeSetting(G,layer)
 
-    for e in ER.edges():
-        ER.edges[e]['num'] = z_pos
-    for node in ER.nodes():
-        ER.nodes[node]['num'] = z_pos
+    return H
 
-    return ER
-
-def networkSF_w_3Dpos_BA(N,m,z_pos=1):
+def networkSF_w_3Dpos_BA(N,m,layer=1):
     """ Create Scale-Free Network following Barabasi Albert Model with 3D position attribute
 
     Parameters
     ----------
     N : Number of nodes
     m : Number of edges to attach from a new node to existing nodes
-    z_pos : Layer of this graph (refer to the method 'add_3Dpos_attributes')
+    layer : Layer of this graph (refer to the method 'nodeSetting')
 
     Returns
     -------
-    SF_BA : Networkx Graph
+    H : Scale Free Barabasi Albert Networkx Graph
 
     """    
-    SF_BA = nx.barabasi_albert_graph(N,m)
-    add_3Dpos_attributes(SF_BA,z_pos)
+    G = nx.barabasi_albert_graph(N,m)
+    H = nodeSetting(G,layer)
 
-    for e in SF_BA.edges():
-        SF_BA.edges[e]['num'] = z_pos
-    for node in SF_BA.nodes():
-        SF_BA.nodes[node]['num'] = z_pos
+    return H
 
-    return SF_BA
-
-def networkSF_w_3Dpos_PowerL(N,gamma,z_pos=1):
+def networkSF_w_3Dpos_PowerL(N,gamma,layer=1):
     """ Create Scale-Free Network following PowerLaw Degree Distribution with 3D position attribute
 
     Parameters
     ----------
     N : Number of nodes
     gamma : Expected gamma value of powerlaw degree distribution 
-    z_pos : Layer of this graph (refer to the method 'add_3Dpos_attributes')
+    layer : Layer of this graph (refer to the method 'add_3Dpos_attributes')
 
     Returns
     -------
-    SF_PowerL : Networkx Graph
+    H : Scale Free Powerlaw Degree Distribution Networkx Graph
 
     """ 
 
@@ -120,11 +120,11 @@ def networkSF_w_3Dpos_PowerL(N,gamma,z_pos=1):
                 
         if (sum(s)%2 == 0): #  As each edge contains two vertices, the degree seq sum has to be even.
 
-            SF_PowerL = nx.configuration_model(s)
-            SF_PowerL = nx.Graph(SF_PowerL) # remove parallel edges
-            SF_PowerL.remove_edges_from(nx.selfloop_edges(SF_PowerL)) # remove selfloop edges
+            G = nx.configuration_model(s)
+            G = nx.Graph(G) # remove parallel edges
+            G.remove_edges_from(nx.selfloop_edges(G)) # remove selfloop edges
 
-            gamma_real = SF_powerlaw_exp(SF_PowerL)
+            gamma_real = SF_powerlaw_exp(G)
             r_gamma_real = round(gamma_real,1) # check the powerlaw gamma value (rounded at decimal place 1)
 
             if (r_gamma_real==gamma):
@@ -132,20 +132,14 @@ def networkSF_w_3Dpos_PowerL(N,gamma,z_pos=1):
 
         i += 1
     
-    add_3Dpos_attributes(SF_PowerL,z_pos)
-
-    for e in SF_PowerL.edges():
-        SF_PowerL.edges[e]['num'] = z_pos
-    for node in SF_PowerL.nodes():
-        SF_PowerL.nodes[node]['num'] = z_pos
+    H = nodeSetting(G,layer)
 
     if (i == 1000):
         print("Couldn't generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
     else:
         print("Generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
 
-    return SF_PowerL
-
+    return H
 
 def intd_random_net (G_a,G_b):
     """ Create an interdependent network from two Random Network
@@ -163,12 +157,16 @@ def intd_random_net (G_a,G_b):
     intd_G : Networkx Graph
 
     """    
+    _ = list(G_a.nodes())[0]
+    a_layer = _.split('-')[0]
+    _ = list(G_b.nodes())[0]
+    b_layer = _.split('-')[0]
 
-    intd_G = nx.union(G_a,G_b, rename=('a-','b-'))
+    intd_G = nx.union(G_a,G_b)
 
     if len(G_a.nodes()) == len(G_b.nodes()):
         for i in range(len(G_a.nodes())):
-            intd_G.add_edge('a-'+str(i),'b-'+str(i)) # Link between two nodes which has same node id.
+            intd_G.add_edge(a_layer+'-'+str(i),b_layer+'-'+str(i)) # Link between two nodes which has same node id.
     else:
         print("ERROR : Given two networks has different network size")
 
@@ -186,20 +184,18 @@ def intdNetworkDraw(intd_G):
     """    
     fig = plt.figure(figsize=(10,10))
     ax = plt.axes(projection='3d')
+    color = ['b','g','r','c','m','y','k','w']
 
     n_attr = nx.get_node_attributes(intd_G,'3D_pos')
+
     for node in n_attr.keys():
         pos = n_attr[node]
         x,y,z = [ i for i in pos]
-        if node.startswith('a-'):
-            color = 'b'
-        elif node.startswith('b-'):
-            color = 'g'
-        else:
-            color = 'r'
-        ax.scatter(x,y,z,c=color)
+        layer = int(node.split('-')[0])
+        ax.scatter(x,y,z,c=color[layer])
 
     for edge in list(intd_G.edges):
+
         pos_a, pos_b = [n_attr[i] for i in edge]
         x_a,y_a,z_a = [i for i in pos_a]
         x_b,y_b,z_b = [i for i in pos_b]
