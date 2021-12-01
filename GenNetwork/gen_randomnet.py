@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import powerlaw
 
-def add_3Dpos_attributes (G,z_pos):
+def add_3Dpos_attributes (G,z_pos=1):
     """ Generate (x,y,z) coordinates for each node
 
     (x,y) coordinates follow the networkx spring layout.
@@ -44,7 +44,7 @@ def SF_powerlaw_exp (G):
     return alpha
 
 
-def networkER_w_3Dpos(N, avgdegree, z_pos):
+def networkER_w_3Dpos(N, avgdegree, z_pos=1):
     """ Create Erdos-Renyi Network with 3D position attribute
 
     Parameters
@@ -62,9 +62,14 @@ def networkER_w_3Dpos(N, avgdegree, z_pos):
     ER = nx.erdos_renyi_graph(N, avgdegree/N)
     add_3Dpos_attributes(ER,z_pos)
 
+    for e in ER.edges():
+        ER.edges[e]['num'] = z_pos
+    for node in ER.nodes():
+        ER.nodes[node]['num'] = z_pos
+
     return ER
 
-def networkSF_w_3Dpos_BA(N,m,z_pos):
+def networkSF_w_3Dpos_BA(N,m,z_pos=1):
     """ Create Scale-Free Network following Barabasi Albert Model with 3D position attribute
 
     Parameters
@@ -81,9 +86,14 @@ def networkSF_w_3Dpos_BA(N,m,z_pos):
     SF_BA = nx.barabasi_albert_graph(N,m)
     add_3Dpos_attributes(SF_BA,z_pos)
 
+    for e in SF_BA.edges():
+        SF_BA.edges[e]['num'] = z_pos
+    for node in SF_BA.nodes():
+        SF_BA.nodes[node]['num'] = z_pos
+
     return SF_BA
 
-def networkSF_w_3Dpos_PowerL(N,gamma,z_pos):
+def networkSF_w_3Dpos_PowerL(N,gamma,z_pos=1):
     """ Create Scale-Free Network following PowerLaw Degree Distribution with 3D position attribute
 
     Parameters
@@ -123,6 +133,11 @@ def networkSF_w_3Dpos_PowerL(N,gamma,z_pos):
         i += 1
     
     add_3Dpos_attributes(SF_PowerL,z_pos)
+
+    for e in SF_PowerL.edges():
+        SF_PowerL.edges[e]['num'] = z_pos
+    for node in SF_PowerL.nodes():
+        SF_PowerL.nodes[node]['num'] = z_pos
 
     if (i == 1000):
         print("Couldn't generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
