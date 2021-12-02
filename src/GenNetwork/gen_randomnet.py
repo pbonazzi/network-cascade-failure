@@ -17,16 +17,19 @@ def nodeSetting (G,layer=1):
     layer : Layer of this graph
     
     """    
+    # Node Attribute '3D_pos' added
     pos = nx.spring_layout(G)
     for node in pos.keys():
         pos[node] = np.append(pos[node],layer)
     nx.set_node_attributes(G,pos,name='3D_pos')
 
+    # Node Attribute 'Num' added
     for e in G.edges():
         G.edges[e]['num'] = layer
     for node in G.nodes():
         G.nodes[node]['num'] = layer
 
+    # Node Renaming
     mapping = {}
     for node in G.nodes():
         mapping[node] = str(layer) + '-' + str(node)
