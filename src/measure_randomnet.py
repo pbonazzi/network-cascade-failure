@@ -1,5 +1,5 @@
 import numpy as np
-import networkx as networkx
+import networkx as nx
 from matplotlib import pyplot as plt
 
 import gen_randomnet as gen_rand
@@ -21,8 +21,9 @@ def compute_pinf(G_att):
 
     '''
     total_num_nodes = len(list(G_att))
-    comp_set = nx.connected_components(G_att)
-    giant_comp = max(cc, key=len)
+    comp_set = list(nx.connected_components(G_att))
+    print(comp_set)
+    giant_comp = max(comp_set, key=len)
     
     p_inf = len(giant_comp)/total_num_nodes
 
@@ -50,15 +51,17 @@ def generate_pinf_ER(n, k):
     G_int = gen_rand.intd_random_net(g1, g2)
     
     p_infs = []
-    ps = np.linspace(0,1,30) 
+    ps = np.linspace(0.1,0.9,10) 
     
     for p in ps:
         mean_p_inf = 0
-        for i in range(10):
+        t=5
+        for i in range(t):
             # attack G with different p and compute p_inf
             G_att = cascade.attack_network(G_int, g1, g2, p)
-            p_inf = compute_pinf(G_att, G_int)
-            mean_p_inf += p_inf/10
+            print(len(list((G_att))))
+            p_inf = compute_pinf(G_att)
+            mean_p_inf += p_inf/t
         p_infs.append(mean_p_inf)
     
     return ps, p_infs   
@@ -78,23 +81,24 @@ def generate_pinf_SF(n, gamma):
     
     '''
     
-    g1 = gen_rand.networkSF_w_3Dpos_PowerL(n, k, 1)
-    g2 = gen_rand.networkSF_w_3Dpos_PowerL(n, k, 2)
+    g1 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 1)
+    g2 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 2)
     G_int = gen_rand.intd_random_net(g1, g2)
     
     p_infs = []
-    ps = np.linspace(0,1,30) 
+    ps = np.linspace(0.1,0.9,10) 
     
     for p in ps:
         mean_p_inf = 0
-        for i in range(10):
+        t=5
+        for i in range(t):
             # attack G with different p and compute p_inf
             G_att = cascade.attack_network(G_int, g1, g2, p)
-            p_inf = compute_pinf(G_att, G_int)
-            mean_p_inf += p_inf/10
+            p_inf = compute_pinf(G_att)
+            mean_p_inf += p_inf/t
         p_infs.append(mean_p_inf)
     
-    return ps, p_infs   
+    return (ps, p_infs)   
 
 
 def plot_pinf(results, k, labels, path=None, p_theory = False):
@@ -112,14 +116,16 @@ def plot_pinf(results, k, labels, path=None, p_theory = False):
 
     for i, res in enumerate(results):
 
-        pks = res[i][0]*k
-        p_infs = res[i][1]
+        pks = res[0]*k
+        p_infs = res[1]
         
-        plt.plot(pks, p_infs, linetype='o-', label = labels[i])
-        plt.xlabel('p')
-        plt.ylabel('p_inf')
-        plt.legend()
-        plt.savefig(path, dpi=300, bbox_inches='tight')
-        
-        plt.show()
+        plt.plot(pks, p_infs, 'o-', label = labels[i])
+
+
+    plt.xlabel('p')
+    plt.ylabel('p_inf')
+    plt.legend()
+    plt.savefig(path, dpi=300, bbox_inches='tight')
+    plt.show()
+    
     
