@@ -6,11 +6,33 @@ import numpy as np
 import json
 
 # %%
-
 import generation as rndm
 import cascadeflr as cas
 import GenNetwork.gen_randomnet as grndm
+import Measure_randomnet as measurerndm
 
+'''
+plot p<k> vs p_inf 
+'''
+# compute p_in with different parameters 
+ERn250k4 = generate_pinf_ER(250, 4)   # ER model, node=250, k=4
+ERn1000k4 = generate_pinf_ER(1000, 4) # ER model, node=1000, k=4
+ERn2000k4 = generate_pinf_ER(2000, 4) # ER model, node=2000, k=4
+
+SFn250k4 = generate_pinf_SF(500, 2.3)   # SF model, node=500, gamma=2.3
+SFn1000k4 = generate_pinf_SF(500, 2.7) # SF model, node=500, gamma=2.7
+SFn2000k4 = generate_pinf_SF(500, 3) # SF model, node=500, gamma=3
+
+# plot the result (save the figure ./fig)
+
+plot_pinf([ERn250k4,ERn1000k4,ERn2000k4], 4, ["ER, n=250, k=4","ER, n=1000, k=4","ER, n=2000, k=4", path="figure/ER_pinf.png", p_theory = False)
+plot_pinf([SFn500g23,SFn500g27,SFn500g3], 4, ["SF, n=500, l=2.3","SF, n=500, l=2.7", "SF, n=500, l=3", path="figure/SF_pinf.png", p_theory = False)
+
+
+
+'''
+test generating single network and interdependent network
+'''
 # %%
 N, n1, n2 = rndm.new_network(5, 3)
 A = cas.attack_network(N, n1, n2, 0.8)
