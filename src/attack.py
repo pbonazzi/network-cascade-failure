@@ -1,11 +1,9 @@
 # %%
 import networkx as nx
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 
 
-def foreign_neighbors(node,G):
+def foreign_neighbors(node, G):
     """
     
     Find the set of all neighbor nodes that initially came from a different network
@@ -20,11 +18,11 @@ def foreign_neighbors(node,G):
     """
 
     foreign = []
-    numb = G.nodes[node]['num']
+    numb = G.nodes[node]['layer']
     s = set(G.neighbors(node))
     while s:
         x = s.pop()
-        if G.nodes[x]['num'] != numb:
+        if G.nodes[x]['layer'] != numb:
             foreign.append(x)
     if len(foreign) == 0:
         foreign = [None]
@@ -33,7 +31,7 @@ def foreign_neighbors(node,G):
 
 
 # %%
-def cascade_fail(G, g1, g2, target, verbose):
+def cascade_fail(G, g1, g2, target, verbose=False):
     """
 
     Original graphs without the target node and all neighboring nodes that originally came from the other network
@@ -52,8 +50,8 @@ def cascade_fail(G, g1, g2, target, verbose):
     G2 = G.copy()
 
     # remove neighboring nodes from the other network
-    num = G.nodes[target]['num']
-    foreign_nodes = foreign_neighbors(target,G)
+    num = G.nodes[target]['layer']
+    foreign_nodes = foreign_neighbors(target, G)
 
     for neigh in foreign_nodes:
         G2.remove_node(neigh)

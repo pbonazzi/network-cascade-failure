@@ -113,6 +113,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Pycharm
-
+# Config
 /.idea
+/.DS_STORE
+
