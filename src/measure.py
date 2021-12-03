@@ -118,12 +118,13 @@ def plot_pinf(results, k, labels, path=None, p_theory=False):
 
     """
     plt.rcParams.update({'font.size': 14})
+    color = iter(plt.cm.rainbow(np.linspace(0.0, 0.3, len(results))))
 
     for i, res in enumerate(results):
         pks = res[0]
         p_infs = res[1]
 
-        plt.plot(pks, p_infs, '.b-', label=labels[i])
+        plt.plot(pks, p_infs, c=next(color), label=labels[i])
 
     plt.xlabel('$P_{node}$(fail)')
     plt.ylabel('$P_{node}$(in Gcomponent)')
