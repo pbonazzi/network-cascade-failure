@@ -49,6 +49,7 @@ def new_network(n, k):
         G.add_edge(a, b, Value=3)
     return G, g1, g2
 
+
 def nodeSetting(G, layer=1):
     """ Generate (x,y,z) coordinates, Node ID and Attribute Setting for cascade methods
 
@@ -84,7 +85,6 @@ def nodeSetting(G, layer=1):
 
     return H
 
-
 def SF_powerlaw_exp(G):
     """ Calculate gamma value of power-law degree distribution
 
@@ -97,6 +97,7 @@ def SF_powerlaw_exp(G):
     alpha : gamma value of power-law degree distribution
     
     """
+
     d = [G.degree()[i] for i in G.nodes()]
 
     fit = powerlaw.Fit(d, discrete=True, verbose=False)
@@ -125,7 +126,6 @@ def networkER_w_3Dpos(N, avgdegree, layer=1):
 
     return H
 
-
 def networkSF_w_3Dpos_BA(N, m, layer=1):
     """ Create Scale-Free Network following Barabasi Albert Model with 3D position attribute
 
@@ -145,7 +145,6 @@ def networkSF_w_3Dpos_BA(N, m, layer=1):
 
     return H
 
-
 def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
     """ Create Scale-Free Network following PowerLaw Degree Distribution with 3D position attribute
 
@@ -163,15 +162,15 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
 
     T = 1000
     i = 0
+    # print("degree sequence Erdos Gallai 1")
     while i < T:
         s = []
 
-        while len(s) < N:  # N nodes, power-law gamma without zero degree
-            nextval = int(nx.utils.powerlaw_sequence(1, gamma)[0])
-            if nextval != 0:
-                s.append(nextval)
-
-        if (sum(s) % 2 == 0):  # As each edge contains two vertices, the degree seq sum has to be even.
+        s = powerlaw.Power_Law(xmin=2, parameters=[gamma]).generate_random(N).astype('int')
+        
+        # Returns True if deg_sequence can be realized by a simple graph.
+        # The validation is done using the Erdős-Gallai theorem
+        if nx.is_valid_degree_sequence_erdos_gallai(s):
 
             G = nx.configuration_model(s)
             G = nx.Graph(G)  # remove parallel edges
@@ -182,15 +181,15 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
 
             if (r_gamma_real == gamma):
                 break
-
         i += 1
 
-    H = nodeSetting(G, layer)
 
     if (i == 1000):
         print("Couldn't generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
     else:
-        print("Generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
+        print("Generate Scale-Free Network based on given powerLaw parameters\n(iter: %d. Last gamma:%f)" %(i,gamma_real))
+
+    H = nodeSetting(G, layer)
 
     return H
 
@@ -219,14 +218,18 @@ def intd_random_net(G_a, G_b):
     intd_G = nx.union(G_a, G_b)
 
     if len(G_a.nodes()) == len(G_b.nodes()):
+
+        n1 = set(G_a.nodes())
+        n2 = set(G_b.nodes())
+
         for i in range(len(G_a.nodes())):
             intd_G.add_edge(a_layer + '-' + str(i),
                             b_layer + '-' + str(i))  # Link between two nodes which has same node id.
+
     else:
         print("ERROR : Given two networks has different network size")
 
     return intd_G
-
 
 def intdNetworkDraw(intd_G):
     """ Draw Interdependent Network
