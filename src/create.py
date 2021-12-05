@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import powerlaw
+import pandas as pd
 
 
 def new_network(n, k):
@@ -84,6 +85,22 @@ def nodeSetting(G, layer=1):
     H = nx.relabel_nodes(G, mapping)
 
     return H
+
+def Paris_NodeSetting (G,df_vertex,Layer_num=1):
+
+    attrs = {}
+    _ = {}
+    for data in df_vertex.values:
+        _ = {}
+        _['Lat'] = data[1]
+        _['Lon'] = data[2]
+        _['Layer'] = Layer_num
+        _['3D_pos'] = np.array([_['Lat'],_['Lon'],Layer_num])
+        attrs[data[0]] = _
+    nx.set_node_attributes(G,attrs)
+
+    return G
+
 
 def SF_powerlaw_exp(G):
     """ Calculate gamma value of power-law degree distribution
@@ -193,6 +210,20 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
 
     return H
 
+def ParisTranspNetwork (vertex_csv, edge_csv, LayerName):
+    df_vertex = pd.read_csv(vertex_csv)
+    df_edge = pd.read_csv(edge_csv)
+
+    transp_vertex = df_vertex['Layer']==LayerName
+    transp_edge = df_edge['Layer']==LayerName
+
+    df_vertex_transp = df_vertex[transp_vertex]
+    df_edge_transp = df_edge[transp_edge]
+
+    G = nx.from_pandas_edgelist(df_edge_transp, '# Source NodeID','Target NodeID',['Layer','name'])
+    
+    return G, df_vertex_transp, df_edge_transp
+
 
 def intd_random_net(G_a, G_b):
     """ Create an interdependent network from two Random Network
@@ -250,8 +281,7 @@ def intdNetworkDraw(intd_G):
     for node in n_attr.keys():
         pos = n_attr[node]
         x, y, z = [i for i in pos]
-        layer = int(node.split('-')[0])
-        ax.scatter(x, y, z, c=color[layer])
+        ax.scatter(x, y, z, c=color[int(z)])
 
     for edge in list(intd_G.edges):
 
