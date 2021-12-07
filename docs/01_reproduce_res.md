@@ -23,19 +23,19 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Run experiment
+### 3. Import virtual environment in Jupyter Notebook
 
 ```
-python3 src/main.py
+python -m ipykernel install --name=myenv
 ```
 
+### 4. Run the experiments
 
-#### [optional] Download the dataset
+Select any experiments [here](../notebooks) .
 
-To get the original dataset run :
+### 5. Uninstall the virtual environment in Jupyter Notebook
 
 ```
-git clone https://github.com/ComplexNetTSP/MultilayerParis.git
+jupyter kernelspec list
+jupyter kernelspec uninstall venv
 ```
-
-For other network datasets click [here](https://icon.colorado.edu/#!/networks) .

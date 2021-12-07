@@ -24,3 +24,15 @@ Songyi Han 18-796-847
   year={2021}
 }
 ```
+
+#  3. Citations
+
+To get the Paris dataset run :
+
+```
+git clone https://github.com/ComplexNetTSP/MultilayerParis.git
+```
+
+To get the France Geojson click [here](https://france-geojson.gregoiredavid.fr/).
+
+For other network datasets click [here](https://icon.colorado.edu/#!/networks) .
