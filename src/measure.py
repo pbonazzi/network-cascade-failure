@@ -41,7 +41,7 @@ def generate_pinf_ER(n, k, t=5):
         for i in range(t):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
-            p_inf = compute_pinf(G_att)
+            p_inf = compute_pinf(G_att, G_int)
             mean_p_inf += p_inf
         p_infs.append(mean_p_inf/t)
         time = datetime.now() - start
@@ -82,7 +82,7 @@ def generate_pinf_SF(n, gamma, t=5):
         for i in range(t):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
-            p_inf = compute_pinf(G_att)
+            p_inf = compute_pinf(G_att, G_int)
             mean_p_inf += p_inf
         p_infs.append(mean_p_inf/t)
         time = datetime.now() - start
@@ -91,7 +91,7 @@ def generate_pinf_SF(n, gamma, t=5):
     return ps, np.array(p_infs)
 
 
-def compute_pinf(G_att):
+def compute_pinf(G_att, G_init):
     """
     compute a probability of mutually connected giant component which is
     the probability that a node belongs to the largest connected component
@@ -108,7 +108,7 @@ def compute_pinf(G_att):
         print("[W] : Computing probabilities for an empty graph returns 0.")
         return 0
     
-    total_num_nodes = len(list(G_att))
+    total_num_nodes = len(list(G_init))
     comp_set = list(nx.connected_components(G_att))
     giant_comp = max(comp_set, key=len)
 
@@ -117,7 +117,7 @@ def compute_pinf(G_att):
     return p_inf
 
 
-def plot_pinf(results, k, labels, path=None, p_theory=False):
+def plot_pinf(results, k=1, labels=None, path=None, p_theory=False):
     """
     plotting the figure of p*k vs p_inf
 
@@ -133,13 +133,19 @@ def plot_pinf(results, k, labels, path=None, p_theory=False):
     color = iter(plt.cm.rainbow(np.linspace(0.0, 0.3, len(results))))
 
     for i, res in enumerate(results):
-        pks = res[0]
+        pks = res[0]*k
         p_infs = res[1]
 
         plt.plot(pks, p_infs, c=next(color), label=labels[i])
-
-    plt.xlabel('$P_{node}$(fail)')
-    plt.ylabel('$P_{node}$(in Gcomponent)')
+    if p_theory :
+        plt.vlines(2.4554, ymin=0, ymax=1, colors='k', linestyles='solid', label='$p_{c}$=2.4554/<k>')
+    if k > 1:
+        plt.xlabel('p<k>')
+    else:
+        plt.xlabel('p')
+        #plt.xlabel('$P_{node}$(fail)')
+    plt.ylabel('$P_{inf}$')
+    #plt.ylabel('$P_{node}$(in Gcomponent)')
     plt.legend()
     plt.savefig(path, dpi=300, bbox_inches='tight')
     plt.grid()
