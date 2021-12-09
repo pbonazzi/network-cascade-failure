@@ -33,7 +33,7 @@ def generate_pinf_ER(n, k, t=5):
     print("...Interdependent Graph Generate Done!", time)
     
     p_infs = []
-    ps = np.linspace(0.1, 0.9, 10)
+    ps = np.linspace(0.1, 0.9, 20)
 
     for p in ps:
         mean_p_inf = 0
@@ -117,7 +117,7 @@ def compute_pinf(G_att, G_init):
     return p_inf
 
 
-def plot_pinf(results, k=1, labels=None, path=None, p_theory=False):
+def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False):
     """
     plotting the figure of p*k vs p_inf
 
@@ -145,6 +145,7 @@ def plot_pinf(results, k=1, labels=None, path=None, p_theory=False):
         plt.xlabel('p')
         #plt.xlabel('$P_{node}$(fail)')
     plt.ylabel('$P_{inf}$')
+    plt.xlim(xlim)
     #plt.ylabel('$P_{node}$(in Gcomponent)')
     plt.legend()
     plt.savefig(path, dpi=300, bbox_inches='tight')
