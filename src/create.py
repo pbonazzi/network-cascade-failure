@@ -86,22 +86,6 @@ def nodeSetting(G, layer=1):
 
     return H
 
-def Paris_NodeSetting (G,df_vertex,Layer_num=1):
-
-    attrs = {}
-    _ = {}
-    for data in df_vertex.values:
-        _ = {}
-        _['Lat'] = data[1]
-        _['Lon'] = data[2]
-        _['Layer'] = Layer_num
-        _['3D_pos'] = np.array([_['Lat'],_['Lon'],Layer_num])
-        attrs[data[0]] = _
-    nx.set_node_attributes(G,attrs)
-
-    return G
-
-
 def SF_powerlaw_exp(G):
     """ Calculate gamma value of power-law degree distribution
 
@@ -210,20 +194,6 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
 
     return H
 
-def ParisTranspNetwork (vertex_csv, edge_csv, LayerName):
-    df_vertex = pd.read_csv(vertex_csv)
-    df_edge = pd.read_csv(edge_csv)
-
-    transp_vertex = df_vertex['Layer']==LayerName
-    transp_edge = df_edge['Layer']==LayerName
-
-    df_vertex_transp = df_vertex[transp_vertex]
-    df_edge_transp = df_edge[transp_edge]
-
-    G = nx.from_pandas_edgelist(df_edge_transp, '# Source NodeID','Target NodeID',['Layer','name'])
-    
-    return G, df_vertex_transp, df_edge_transp
-
 
 def intd_random_net(G_a, G_b):
     """ Create an interdependent network from two Random Network
@@ -262,7 +232,7 @@ def intd_random_net(G_a, G_b):
 
     return intd_G
 
-def intdNetworkDraw(intd_G):
+def intdNetworkDraw(intd_G, nodeSize):
     """ Draw Interdependent Network
 
     Refer to each node's 3D coordinates.
@@ -281,7 +251,7 @@ def intdNetworkDraw(intd_G):
     for node in n_attr.keys():
         pos = n_attr[node]
         x, y, z = [i for i in pos]
-        ax.scatter(x, y, z, c=color[int(z)])
+        ax.scatter(x, y, z, c=color[int(z)], s=nodeSize)
 
     for edge in list(intd_G.edges):
 
@@ -290,11 +260,123 @@ def intdNetworkDraw(intd_G):
         x_b, y_b, z_b = [i for i in pos_b]
 
         if z_a != z_b:
-            alpha = 0.5  # If the edge connect two nodes in different layer, the edge transparency set differently.
+            alpha = 0.1  # If the edge connect two nodes in different layer, the edge transparency set differently.
         else:
             alpha = 1
         ax.plot([x_a, x_b], [y_a, y_b], [z_a, z_b], color="tab:gray", alpha=alpha)
 
-    ax.set_axis_off()
+    # ax.set_axis_off()
     plt.show()
     return
+
+
+
+
+def paris_NodeSetting (G,df_vertex,Layer_num=1):
+
+    l_vertex = df_vertex.values.tolist()
+
+    pos = {}
+
+    for i in range(len(l_vertex)):
+        pos[l_vertex[i][0]] = [l_vertex[i][1],l_vertex[i][2],Layer_num]
+    nx.set_node_attributes(G, pos, name = '3D_pos')
+
+    return G
+
+def paris_GenTranspNet (vertex_csv, edge_csv, LayerName, LayerNumber):
+    df_vertex = pd.read_csv(vertex_csv)
+    df_edge = pd.read_csv(edge_csv)
+
+    transp_vertex = df_vertex['Layer']==LayerName
+    transp_edge = df_edge['Layer']==LayerName
+
+    df_vertex_transp = df_vertex[transp_vertex].reset_index(drop=True)
+    df_edge_transp = df_edge[transp_edge].reset_index(drop=True)
+
+    G = nx.from_pandas_edgelist(df_edge_transp, '# Source NodeID','Target NodeID',['Layer','name'])
+    
+    G = paris_NodeSetting(G,df_vertex,LayerNumber)
+
+    return G, df_vertex_transp, df_edge_transp
+
+def paris_GenMultiTranspNet (G,H,edges_GH_csv):
+
+    intd_GH = nx.union(G,H)
+    df_e_GH = pd.read_csv(edges_GH_csv)
+
+    s_source = df_e_GH.loc[:,"# Source NodeID"]
+    s_target = df_e_GH.loc[:,"Target NodeID"]
+
+    e_GH_list = []
+    for i in range(len(s_source)):
+        tp = (s_source[i], s_target[i])
+        e_GH_list.append(tp)
+
+    intd_GH.add_edges_from(e_GH_list)
+
+    return intd_GH, e_GH_list
+
+def paris_CrsLayerAddColumn(df_edge_cross, df_vertex_train, df_vertex_tram, df_vertex_metro, df_vertex_road):
+    """ Add Column of 'Source Layer' and 'Target Layer' into the cross layer edge dataframe
+
+    Parameters
+    ----------
+
+    """
+    
+    df = df_edge_cross
+
+    df_train = df_vertex_train
+    df_tram = df_vertex_tram
+    df_metro = df_vertex_metro
+    df_road = df_vertex_road
+
+
+
+    column = df.loc[:, "# Source NodeID"]
+
+    srcLayer = []
+    for node in column:
+
+        # node = column[index]
+
+        if node in df_train.loc[:, "# NodeID"].to_list():
+            result = 'train'
+        elif node in df_tram.loc[:, "# NodeID"].to_list():
+            result = 'tram'
+        elif node in df_metro.loc[:, "# NodeID"].to_list():
+            result = 'metro'
+        elif node in df_road.loc[:, "# NodeID"].to_list():
+            result = 'road'
+        else:
+            result = 'none'
+
+        srcLayer.append(result)
+
+
+
+    column = df.loc[:,"Target NodeID"]
+
+    targLayer = []
+    for index in column.index:
+
+        node = column[index]
+
+        if node in df_train.loc[:,"# NodeID"].to_list():
+            result = 'train'
+        elif node in df_tram.loc[:,"# NodeID"].to_list():
+            result = 'tram'
+        elif node in df_metro.loc[:,"# NodeID"].to_list():
+            result = 'metro'
+        elif node in df_road.loc[:,"# NodeID"].to_list():
+            result = 'road'
+        else:
+            result = 'none'
+
+        targLayer.append(result)
+
+    df.loc[:, "Source Layer"] = srcLayer
+    df.loc[:, "Target Layer"] = targLayer
+
+    return df
