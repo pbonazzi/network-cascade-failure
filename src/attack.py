@@ -4,16 +4,17 @@ import numpy as np
 
 
 def foreign_neighbors(node, G):
-    """
-    
-    Find the set of all neighbor nodes that initially came from a different network
+    """ Find the set of all neighbor nodes that initially came from a different network
+
 
     Parameters
-        - Graph G : any networkx graph
-        - node node : a node from the graph
+    ----------
+    node node : a node from the graph
+    Graph G : any networkx graph
 
     Return
-        - set : set of foreign neighbors
+    ----------
+    set : set of foreign neighbors
 
     """
 
@@ -32,65 +33,67 @@ def foreign_neighbors(node, G):
 
 # %%
 def cascade_fail(G, g1, g2, target, verbose=False):
-    """
+    """Original graphs without the target node and all neighboring nodes that originally came from the other network.
 
-    Original graphs without the target node and all neighboring nodes that originally came from the other network
 
     Parameters
-        - Graph G :
-        - Graph g1 :
-        - Graph g2 :
-        - node target : target node
-        - bool verbose :
+    ----------
+    Graph G, g1, g2
+    node target : target node
+    bool verbose : visualize results
 
     Return
-        - Graph G2 , g1 , g2 : updated graphs
+    ----------
+    Graph G2 , g1 , g2 : updated graphs
 
     """
     G2 = G.copy()
-
+    
+    # if interconnected network
     # remove neighboring nodes from the other network
-    num = G.nodes[target]['layer']
-    foreign_nodes = foreign_neighbors(target, G)
+    interconnected = (len(g1.nodes()) != 0 and len(g2.nodes()) != 0)
+    if interconnected : 
+        num = G.nodes[target]['layer']
+        foreign_nodes = foreign_neighbors(target, G)
 
-    for neigh in foreign_nodes:
-        G2.remove_node(neigh)
-        if num == 2:
-            g1.remove_node(neigh)
-        else:
-            g2.remove_node(neigh)
-        if verbose:
-            print('Deleted neighbour', neigh)
+        for neigh in foreign_nodes:
+            G2.remove_node(neigh)
+            if num == 2:
+                g1.remove_node(neigh)
+            else:
+                g2.remove_node(neigh)
+            if verbose:
+                print('Deleted neighbour', neigh)
 
     # remove target node
     G2.remove_node(target)
-    if num == 1:
-        g1.remove_node(target)
-    else:
-        g2.remove_node(target)
+    if interconnected : 
+        if num == 1:
+            g1.remove_node(target)
+        else:
+            g2.remove_node(target)
 
     return G2, g1, g2
 
 
 # %%
 def cascade_rec(G, g1, g2, counter, verbose):
-    """
+    """Remove the edges of distant nodes .
 
-    Remove the edges of distant nodes .
-
-    Process :
+    Process
+    ----------
        Get the edges in g2. For each node of the edge pair, find their foreign neighbors.
        If nodes in these two sets are in different clusters in g1, remove the edge pair connection in g2 and G.
 
     Parameters
-        - Graph G :
-        - Graph g1 :
-        - Graph g2 :
-        - int counter :
-        - bool verbose :
+    ----------
+     Graph G , g1, g2 : networkx graphs
+     int counter : 
+     bool verbose : visualize results
 
     Return
-        - Graph G2 :
+    ----------
+    Graph G2 : networkx graphs
 
     """
 
@@ -132,20 +135,19 @@ def cascade_rec(G, g1, g2, counter, verbose):
 
 
 # %%
-def attack_network(G, g1, g2, p, verbose=True):
-    """
-
-    Entry function called in the main. Select the nodes to be attacked and run the cascade failure on each target.
+def attack_network(G, g1=nx.Graph(), g2=nx.Graph(), p=0.5, verbose=True):
+    """ Entry function called in the main. Select the nodes to be attacked and run the cascade failure on each target.
 
     Parameters
-        - Graph G :
-        - Graph g1 :
-        - Graph g2 :
-        - float p : probability that each node is deleted
-        - bool verbose :
+    ----------
+    Graph G, g1, g2 : networkx graphs
+    bool union : specifies if there are two graph combined 
+    float p : probability that each node is deleted
+    bool verbose : visualize results
 
     Return
-        - Graph G2 :
+    ----------
+    Graph G : a networkx graph
 
     """
     # we keep and update the  sub-networks to detect the connected components
@@ -155,7 +157,12 @@ def attack_network(G, g1, g2, p, verbose=True):
 
     # randomly select node to remove from network g1 (or A in paper)
     candidates = set()
-    for node in g1.nodes():
+    nodes = g1.nodes()
+    single = (len(nodes)==0)
+    if single : 
+        nodes = G.nodes()
+        
+    for node in nodes:
         if np.random.random() < 1 - p:
             candidates.add(node)
 
@@ -170,7 +177,7 @@ def attack_network(G, g1, g2, p, verbose=True):
 
     # recursively detect clusters and remove connecting links from neighboring network by switching g1=g2 and g2=g1
     # G3,g1,g2 = cascade_rec(G2,g1,g2,1,verbose)
+    if not single :
+        G, g1, g2 = cascade_rec(G, g1, g2, 1, verbose)
 
-    G2, g1, g2 = cascade_rec(G, g1, g2, 1, verbose)
-
-    return G2
+    return G
