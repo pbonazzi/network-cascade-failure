@@ -110,7 +110,10 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, t=5):
         for i in range(t):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
-            p_inf = compute_pinf(G_att, G_int)
+            G_casc, gcas1,gcas2 = att.cascade_rec(G_int, g1, g2, 1, False)
+            comp_set = list(nx.connected_components(G_casc))
+            giant_comp = max(comp_set, key=len)
+            p_inf = compute_pinf(G_att, G_int, mut=len(giant_comp))
             mean_p_inf += p_inf
         p_infs.append(mean_p_inf/t)
         time = datetime.now() - start
@@ -118,7 +121,7 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, t=5):
 
     return ps, np.array(p_infs)
 
-def compute_pinf(G_att, G_init):
+def compute_pinf(G_att, G_init, mut=None):
     """
     compute a probability of mutually connected giant component which is
     the probability that a node belongs to the largest connected component
@@ -134,8 +137,11 @@ def compute_pinf(G_att, G_init):
     if len(G_att.nodes())== 0 :
         print("[W] : Computing probabilities for an empty graph returns 0.")
         return 0
-    
     total_num_nodes = len(list(G_init))
+
+    if mut != None :
+        total_num_nodes = mut # cacasde recursive first and then measure the connected components.
+    
     comp_set = list(nx.connected_components(G_att))
     giant_comp = max(comp_set, key=len)
 
@@ -144,6 +150,7 @@ def compute_pinf(G_att, G_init):
 
     print("giant component : ", len(giant_comp))
     print("giant component init : ", len(giant_comp_init))
+    print("giant component real : ", mut)
 
     p_inf = len(giant_comp) / total_num_nodes
 
