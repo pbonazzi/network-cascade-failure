@@ -111,7 +111,7 @@ def cascade_rec(G, g1, g2, counter, verbose):
         a, b = edges.pop()
         n1 = foreign_neighbors(a, G)
         n2 = foreign_neighbors(b, G)
-        if n1 == {None} or n2 == {None}:
+        if n1 == set([]) or n2 == set([]):
             continue
         for comp in components:
             if (n1.issubset(comp) and not n2.issubset(comp)) or (not n1.issubset(comp) and n2.issubset(comp)):
@@ -163,10 +163,10 @@ def attack_network(G, g1=nx.Graph(), g2=nx.Graph(), p=0.5, verbose=True):
         nodes = G.nodes()
         
     for node in nodes:
-        if np.random.random() > 1 - p:
+        if np.random.random() < 1 - p:
             candidates.add(node)
 
-    print(candidates)
+    # print(candidates)
     # delete nodes and update the set
     while candidates:
         target = candidates.pop()
