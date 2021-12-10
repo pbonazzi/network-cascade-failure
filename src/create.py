@@ -173,9 +173,12 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
         # The validation is done using the Erdős-Gallai theorem
         if nx.is_valid_degree_sequence_erdos_gallai(s):
 
-            G = nx.configuration_model(s)
-            G = nx.Graph(G)  # remove parallel edges
-            G.remove_edges_from(nx.selfloop_edges(G))  # remove selfloop edges
+            # G = nx.configuration_model(s)
+            # G = nx.Graph(G)  # remove parallel edges
+            # G.remove_edges_from(nx.selfloop_edges(G))  # remove selfloop edges
+            
+            # Test
+            G = ConfigurationModel(s, relax=True)
 
             gamma_real = SF_powerlaw_exp(G)
             r_gamma_real = round(gamma_real, 1)  # check the powerlaw gamma value (rounded at decimal place 1)
@@ -270,6 +273,35 @@ def intdNetworkDraw(intd_G, nodeSize):
     return
 
 
+def ConfigurationModel(degrees, relax = False):
+    # assume that we are given a graphical degree sequence
+
+    # create empty network with n nodes
+    n = len(degrees)
+    g = nx.Graph()
+    
+    # generate link stubs based on degree sequence
+    stubs = []
+    for i in range(n):
+        for k in range(degrees[i]):
+            stubs.append(i)
+    
+    # connect randomly chosen pairs of link stubs
+    # note: if relax is True, we conceptually allow self-loops 
+    # and multi-edges, but do not add them to the network/
+    # This implies that the generated network may not have 
+    # exactly sum(degrees)/2 links, but it ensures that the algorithm 
+    # always finishes.
+    while(len(stubs)>0):
+        v, w = np.random.choice(stubs, 2, replace=False)
+        if relax or (v!=w and ((v,w) not in g.edges.keys())):
+            # do not add self-loops and multi-edges
+            if (v!=w and ((v,w) not in g.edges.keys())):
+                g.add_edge(v,w)
+            stubs.remove(v)
+            stubs.remove(w)
+    return g
+
 
 
 def paris_NodeSetting (G,df_vertex,Layer_num=1):
@@ -281,6 +313,7 @@ def paris_NodeSetting (G,df_vertex,Layer_num=1):
     for i in range(len(l_vertex)):
         pos[l_vertex[i][0]] = [l_vertex[i][1],l_vertex[i][2],Layer_num]
     nx.set_node_attributes(G, pos, name = '3D_pos')
+    nx.set_node_attributes(G, Layer_num, name = 'layer')
 
     return G
 

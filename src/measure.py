@@ -49,7 +49,6 @@ def generate_pinf_ER(n, k, t=5):
 
     return ps, np.array(p_infs)
 
-
 def generate_pinf_SF(n, gamma, t=5):
     """
     generate p_inf of Scale-free model along with the 1-p from [0,1]
@@ -74,7 +73,7 @@ def generate_pinf_SF(n, gamma, t=5):
     print("...Interdependent Graph Generate Done!", time)
 
     p_infs = []
-    ps = np.linspace(0.1, 0.9, 10)
+    ps = np.linspace(0.1, 0.9, 20)
 
     for p in ps:
         mean_p_inf = 0
@@ -90,6 +89,34 @@ def generate_pinf_SF(n, gamma, t=5):
 
     return ps, np.array(p_infs)
 
+def generate_pinf_real(n_file, e_file, edges_crosslayer, t=5):
+
+    start = datetime.now()
+
+    g2, df_n_train, df_e_train = gen_rand.paris_GenTranspNet(n_file,e_file,'train',2)
+    g1, df_n_metro, df_e_metro = gen_rand.paris_GenTranspNet(n_file,e_file,'metro',1)
+
+    G_int, e_m_tr = gen_rand.paris_GenMultiTranspNet(g1, g2, edges_crosslayer)
+
+    time = datetime.now() - start
+    print("...Interdependent Graph Generate Done!", time)
+
+    p_infs = []
+    ps = np.linspace(0, 1, 20)
+
+    for p in ps:
+        mean_p_inf = 0
+        start = datetime.now()
+        for i in range(t):
+            # attack G with different p and compute p_inf
+            G_att = att.attack_network(G_int, g1, g2, p, False)
+            p_inf = compute_pinf(G_att, G_int)
+            mean_p_inf += p_inf
+        p_infs.append(mean_p_inf/t)
+        time = datetime.now() - start
+        print("...test: '%f' is Done!" %(p), time)
+
+    return ps, np.array(p_infs)
 
 def compute_pinf(G_att, G_init):
     """
@@ -111,6 +138,12 @@ def compute_pinf(G_att, G_init):
     total_num_nodes = len(list(G_init))
     comp_set = list(nx.connected_components(G_att))
     giant_comp = max(comp_set, key=len)
+
+    comp_set_init = list(nx.connected_components(G_init))
+    giant_comp_init = max(comp_set_init, key=len)
+
+    print("giant component : ", len(giant_comp))
+    print("giant component init : ", len(giant_comp_init))
 
     p_inf = len(giant_comp) / total_num_nodes
 

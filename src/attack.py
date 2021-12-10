@@ -26,7 +26,7 @@ def foreign_neighbors(node, G):
         if G.nodes[x]['layer'] != numb:
             foreign.append(x)
     if len(foreign) == 0:
-        foreign = [None]
+        foreign = []
 
     return set(foreign)
 
@@ -55,15 +55,15 @@ def cascade_fail(G, g1, g2, target, verbose=False):
     if interconnected : 
         num = G.nodes[target]['layer']
         foreign_nodes = foreign_neighbors(target, G)
-
-        for neigh in foreign_nodes:
-            G2.remove_node(neigh)
-            if num == 2:
-                g1.remove_node(neigh)
-            else:
-                g2.remove_node(neigh)
-            if verbose:
-                print('Deleted neighbour', neigh)
+        if foreign_nodes != set([]):
+            for neigh in foreign_nodes:
+                G2.remove_node(neigh)
+                if num == 2:
+                    g1.remove_node(neigh)
+                else:
+                    g2.remove_node(neigh)
+                if verbose:
+                    print('Deleted neighbour', neigh)
 
     # remove target node
     G2.remove_node(target)
@@ -163,9 +163,10 @@ def attack_network(G, g1=nx.Graph(), g2=nx.Graph(), p=0.5, verbose=True):
         nodes = G.nodes()
         
     for node in nodes:
-        if np.random.random() < 1 - p:
+        if np.random.random() > 1 - p:
             candidates.add(node)
 
+    print(candidates)
     # delete nodes and update the set
     while candidates:
         target = candidates.pop()
