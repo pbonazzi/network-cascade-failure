@@ -163,31 +163,34 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
 
     T = 1000
     i = 0
+    cond1, cond2, cond3 = False, False, False
+
+    # s = powerlaw.Power_Law(xmin=2, parameters=[gamma]).generate_random(N).astype('int')
+    # cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
+    # if cond1:
+    #     G = nx.configuration_model(s)
+    #     cond2 = (len(list(nx.selfloop_edges(G))) == 0)
+    #     gamma_real = SF_powerlaw_exp(G)
+    #     r_gamma_real = round(gamma_real, 1) 
+    #     cond3 = (r_gamma_real == gamma)
+
+
+    
     # print("degree sequence Erdos Gallai 1")
-    while i < T:
-        s = []
 
+    while (not cond1 or not cond2 or not cond3):
+        print("In while")
         s = powerlaw.Power_Law(xmin=2, parameters=[gamma]).generate_random(N).astype('int')
-        
-        # Returns True if deg_sequence can be realized by a simple graph.
-        # The validation is done using the Erdős-Gallai theorem
-        if nx.is_valid_degree_sequence_erdos_gallai(s):
-
-            # G = nx.configuration_model(s)
-            # G = nx.Graph(G)  # remove parallel edges
-            # G.remove_edges_from(nx.selfloop_edges(G))  # remove selfloop edges
-            
-            # Test
-            G = ConfigurationModel(s, relax=True)
-
+        cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
+        if cond1:
+            G = nx.configuration_model(s)
+            cond2 = (len(list(nx.selfloop_edges(G))) == 0)
             gamma_real = SF_powerlaw_exp(G)
-            r_gamma_real = round(gamma_real, 1)  # check the powerlaw gamma value (rounded at decimal place 1)
+            r_gamma_real = round(gamma_real, 1) 
+            cond3 = (r_gamma_real == gamma)
 
-            if (r_gamma_real == gamma):
-                break
-        i += 1
-
-
+    G = nx.Graph(G)  # remove parallel edges
+    
     if (i == 1000):
         print("Couldn't generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
     else:
