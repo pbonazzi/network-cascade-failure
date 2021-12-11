@@ -49,7 +49,7 @@ def generate_pinf_ER(n, k, t=5):
 
     return ps, np.array(p_infs)
 
-def generate_pinf_SF(n, gamma, t=5):
+def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
     """
     generate p_inf of Scale-free model along with the 1-p from [0,1]
 
@@ -57,6 +57,8 @@ def generate_pinf_SF(n, gamma, t=5):
     - n     : [int] a number of nodes in the network
     - gamma : [int] an expected gamma value of the power law degree distribution
     - t     : [int] a number of iteration to calculate the mean result
+    - hasGraph : [Bool] Check whether using given SF graph data or creating new SF graph
+    - files : [path list] When hasGraph is True, It is used for the file paths [g1,g2,G]
 
     return
     - [list] tuple of p and p_inf
@@ -65,12 +67,17 @@ def generate_pinf_SF(n, gamma, t=5):
 
 
     """
-    start = datetime.now()
-    g1 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 1)
-    g2 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 2)
-    G_int = gen_rand.intd_random_net(g1, g2)
-    time = datetime.now() - start
-    print("...Interdependent Graph Generate Done!", time)
+    if hasGraph:
+        g1 = nx.read_gpickle(files[0])
+        g2 = nx.read_gpickle(files[1])
+        G_int = nx.read_gpickle(files[2])
+    else:
+        start = datetime.now()
+        g1 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 1)
+        g2 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 2)
+        G_int = gen_rand.intd_random_net(g1, g2)
+        time = datetime.now() - start
+        print("...Interdependent Graph Generate Done!", time)
 
     p_infs = []
     ps = np.linspace(0.1, 0.9, 20)
@@ -148,9 +155,9 @@ def compute_pinf(G_att, G_init, mut=None):
     comp_set_init = list(nx.connected_components(G_init))
     giant_comp_init = max(comp_set_init, key=len)
 
-    print("giant component : ", len(giant_comp))
-    print("giant component init : ", len(giant_comp_init))
-    print("giant component real : ", mut)
+    # print("giant component : ", len(giant_comp))
+    # print("giant component init : ", len(giant_comp_init))
+    # print("giant component real : ", mut)
 
     p_inf = len(giant_comp) / total_num_nodes
 
