@@ -71,6 +71,7 @@ def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
         g1 = nx.read_gpickle(files[0])
         g2 = nx.read_gpickle(files[1])
         G_int = nx.read_gpickle(files[2])
+        print("...Interdependent Graph Data were given!")
     else:
         start = datetime.now()
         g1 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 1)
