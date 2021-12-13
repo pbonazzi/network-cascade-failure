@@ -153,6 +153,7 @@ def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
     ----------
     N : Number of nodes
     gamma : Expected gamma value of powerlaw degree distribution 
+    avgdegree : Expected average degree of desired SF network.
     layer : Layer of this graph (refer to the method 'add_3Dpos_attributes')
 
     Returns
@@ -171,12 +172,12 @@ def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
     i = 0
     while not(cond1 and cond2 and cond3 and cond4):
     
-        s = powerlaw.Power_Law(xmin=xmin, parameters=[gamma], discrete=True).generate_random(N)
+        s = powerlaw.Power_Law(xmin=xmin, parameters=[gamma], discrete=True).generate_random(N).astype(int)
         xmean = sum(s)/len(s)
         cond4 = avgdegree == round(xmean,0)
         cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
         if cond1 and cond4:
-            G = nx.configuration_model(s) 
+            G = nx.configuration_model(s)
             G = nx.Graph(G) # remove parallel edges
             cond2 = (len(list(nx.selfloop_edges(G))) == 0)
             gamma_real = SF_powerlaw_exp(G)
