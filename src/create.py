@@ -146,7 +146,7 @@ def networkSF_w_3Dpos_BA(N, m, layer=1):
 
     return H
 
-def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
+def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
     """ Create Scale-Free Network following PowerLaw Degree Distribution with 3D position attribute
 
     Parameters
@@ -163,16 +163,21 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
 
     # condition 1 : whether the degree sequence can be a finite simple graph or not
     # condition 2 : whether the graph has self loop or not
-    # condition 3 : whether the graph follow the power law with a given gamma or not 
-    cond1, cond2, cond3 = False, False, False
+    # condition 3 : whether the graph follow the power law with a given gamma or not
+    # condition 4 : whether the average degree is same with the expected one.
+    cond1, cond2, cond3, cond4 = False, False, False, False
+    xmin = (gamma-2)*avgdegree/(gamma-1)
     
     i = 0
-    while not(cond1 and cond2 and cond3):
+    while not(cond1 and cond2 and cond3 and cond4):
     
-        s = powerlaw.Power_Law(xmin=2, parameters=[gamma]).generate_random(N).astype('int')
+        s = powerlaw.Power_Law(xmin=xmin, parameters=[gamma], discrete=True).generate_random(N)
+        xmean = sum(s)/len(s)
+        cond4 = avgdegree == round(xmean,0)
         cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
-        if cond1:
-            G = nx.configuration_model(s)
+        if cond1 and cond4:
+            G = nx.configuration_model(s) 
+            G = nx.Graph(G) # remove parallel edges
             cond2 = (len(list(nx.selfloop_edges(G))) == 0)
             gamma_real = SF_powerlaw_exp(G)
             r_gamma_real = round(gamma_real, 1) 
@@ -181,12 +186,14 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
         i += 1
         print(i, end='\r')
         
-    G = nx.Graph(G)  # remove parallel edges
+    # G = nx.Graph(G)  # remove parallel edges
     
     if (i == 1000):
-        print("Couldn't generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
+        print("Couldn't generate Scale-Free Network based on given powerLaw parameters $ avg. degree.\n(iter: %d. Last gamma:%f. avg. degree: %f)"
+            %(i,gamma_real,xmean))
     else:
-        print("Generate Scale-Free Network based on given powerLaw parameters\n(iter: %d. Last gamma:%f)" %(i,gamma_real))
+        print("Generate Scale-Free Network based on given powerLaw parameters & avg. degree \n(iter: %d. Last gamma:%f)"
+            %(i,gamma_real,xmean))
 
     H = nodeSetting(G, layer)
 
