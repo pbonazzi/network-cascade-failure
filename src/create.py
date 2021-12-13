@@ -174,7 +174,7 @@ def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
     
         s = powerlaw.Power_Law(xmin=xmin, parameters=[gamma], discrete=True).generate_random(N).astype(int)
         xmean = sum(s)/len(s)
-        cond4 = avgdegree == round(xmean,0)
+        cond4 = avgdegree == round(xmean,1)
         cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
         if cond1 and cond4:
             G = nx.configuration_model(s)
@@ -193,7 +193,9 @@ def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
         print("Couldn't generate Scale-Free Network based on given powerLaw parameters $ avg. degree.\n(iter: %d. Last gamma:%f. avg. degree: %f)"
             %(i,gamma_real,xmean))
     else:
-        print("Generate Scale-Free Network based on given powerLaw parameters & avg. degree \n(iter: %d. Last gamma:%f)"
+        print(i,gamma_real,xmean)
+        print(type(i),type(gamma_real),type(xmean))
+        print("Generate Scale-Free Network based on given powerLaw parameters & avg. degree \n(iter: %d. Last gamma:%f. avg. degree: %f)"
             %(i,gamma_real,xmean))
 
     H = nodeSetting(G, layer)
