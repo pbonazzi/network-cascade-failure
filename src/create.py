@@ -194,7 +194,6 @@ def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
             %(i,gamma_real,xmean))
     else:
         print(i,gamma_real,xmean)
-        print(type(i),type(gamma_real),type(xmean))
         print("Generate Scale-Free Network based on given powerLaw parameters & avg. degree \n(iter: %d. Last gamma:%f. avg. degree: %f)"
             %(i,gamma_real,xmean))
 
