@@ -3,14 +3,11 @@ from src.create import *
 from src.measure import *
 
 print("\n++++++++++++++++++++++++++++++")
-print("ER N1000 Test Start...")
+print("ER N64000 Test Start...")
 print("++++++++++++++++++++++++++++++\n")
 
 ERn64000k4 = generate_pinf_ER(64000, 4, 10)
-np.savetxt('./notebooks/results/1012/ERn64000k4csv', ERn64000k4, delimiter=',')
-
-
-
+np.savetxt('./notebooks/results/1012/ERn64000k4.csv', ERn64000k4, delimiter=',')
 
 
 # #ERn1000k4 = generate_pinf_ER(1000, 4, 10)  # ER model, node=1000, k=4

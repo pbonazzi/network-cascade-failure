@@ -146,13 +146,14 @@ def networkSF_w_3Dpos_BA(N, m, layer=1):
 
     return H
 
-def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
+def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
     """ Create Scale-Free Network following PowerLaw Degree Distribution with 3D position attribute
 
     Parameters
     ----------
     N : Number of nodes
     gamma : Expected gamma value of powerlaw degree distribution 
+    avgdegree : Expected average degree of desired SF network.
     layer : Layer of this graph (refer to the method 'add_3Dpos_attributes')
 
     Returns
@@ -161,40 +162,40 @@ def networkSF_w_3Dpos_PowerL(N, gamma, layer=1):
 
     """
 
-    T = 1000
-    i = 0
-    cond1, cond2, cond3 = False, False, False
-
-    # s = powerlaw.Power_Law(xmin=2, parameters=[gamma]).generate_random(N).astype('int')
-    # cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
-    # if cond1:
-    #     G = nx.configuration_model(s)
-    #     cond2 = (len(list(nx.selfloop_edges(G))) == 0)
-    #     gamma_real = SF_powerlaw_exp(G)
-    #     r_gamma_real = round(gamma_real, 1) 
-    #     cond3 = (r_gamma_real == gamma)
-
-
+    # condition 1 : whether the degree sequence can be a finite simple graph or not
+    # condition 2 : whether the graph has self loop or not
+    # condition 3 : whether the graph follow the power law with a given gamma or not
+    # condition 4 : whether the average degree is same with the expected one.
+    cond1, cond2, cond3, cond4 = False, False, False, False
+    xmin = (gamma-2)*avgdegree/(gamma-1)
     
-    # print("degree sequence Erdos Gallai 1")
-
-    while (not cond1 or not cond2 or not cond3):
-        print("In while")
-        s = powerlaw.Power_Law(xmin=2, parameters=[gamma]).generate_random(N).astype('int')
+    i = 0
+    while not(cond1 and cond2 and cond3 and cond4):
+    
+        s = powerlaw.Power_Law(xmin=xmin, parameters=[gamma], discrete=True).generate_random(N).astype(int)
+        xmean = sum(s)/len(s)
+        cond4 = avgdegree == round(xmean,1)
         cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
-        if cond1:
+        if cond1 and cond4:
             G = nx.configuration_model(s)
+            G = nx.Graph(G) # remove parallel edges
             cond2 = (len(list(nx.selfloop_edges(G))) == 0)
             gamma_real = SF_powerlaw_exp(G)
             r_gamma_real = round(gamma_real, 1) 
             cond3 = (r_gamma_real == gamma)
-
-    G = nx.Graph(G)  # remove parallel edges
+        
+        i += 1
+        print(i, end='\r')
+        
+    # G = nx.Graph(G)  # remove parallel edges
     
     if (i == 1000):
-        print("Couldn't generate Scale-Free Network based on given powerLaw parameters. Last gamma:", gamma_real)
+        print("Couldn't generate Scale-Free Network based on given powerLaw parameters $ avg. degree.\n(iter: %d. Last gamma:%f. avg. degree: %f)"
+            %(i,gamma_real,xmean))
     else:
-        print("Generate Scale-Free Network based on given powerLaw parameters\n(iter: %d. Last gamma:%f)" %(i,gamma_real))
+        print(i,gamma_real,xmean)
+        print("Generate Scale-Free Network based on given powerLaw parameters & avg. degree \n(iter: %d. Last gamma:%f. avg. degree: %f)"
+            %(i,gamma_real,xmean))
 
     H = nodeSetting(G, layer)
 
@@ -274,37 +275,6 @@ def intdNetworkDraw(intd_G, nodeSize):
     # ax.set_axis_off()
     plt.show()
     return
-
-
-def ConfigurationModel(degrees, relax = False):
-    # assume that we are given a graphical degree sequence
-
-    # create empty network with n nodes
-    n = len(degrees)
-    g = nx.Graph()
-    
-    # generate link stubs based on degree sequence
-    stubs = []
-    for i in range(n):
-        for k in range(degrees[i]):
-            stubs.append(i)
-    
-    # connect randomly chosen pairs of link stubs
-    # note: if relax is True, we conceptually allow self-loops 
-    # and multi-edges, but do not add them to the network/
-    # This implies that the generated network may not have 
-    # exactly sum(degrees)/2 links, but it ensures that the algorithm 
-    # always finishes.
-    while(len(stubs)>0):
-        v, w = np.random.choice(stubs, 2, replace=False)
-        if relax or (v!=w and ((v,w) not in g.edges.keys())):
-            # do not add self-loops and multi-edges
-            if (v!=w and ((v,w) not in g.edges.keys())):
-                g.add_edge(v,w)
-            stubs.remove(v)
-            stubs.remove(w)
-    return g
-
 
 
 def paris_NodeSetting (G,df_vertex,Layer_num=1):

@@ -48,7 +48,7 @@ def generate_pinf_ER(n, k, t=5):
     print("...test: '%f' is Done!" %(p), time)
     return ps, np.array(p_infs)
 
-def generate_pinf_SF(n, gamma, t=5):
+def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
     """
     generate p_inf of Scale-free model along with the 1-p from [0,1]
 
@@ -56,6 +56,8 @@ def generate_pinf_SF(n, gamma, t=5):
     - n     : [int] a number of nodes in the network
     - gamma : [int] an expected gamma value of the power law degree distribution
     - t     : [int] a number of iteration to calculate the mean result
+    - hasGraph : [Bool] Check whether using given SF graph data or creating new SF graph
+    - files : [path list] When hasGraph is True, It is used for the file paths [g1,g2,G]
 
     return
     - [list] tuple of p and p_inf
@@ -64,12 +66,18 @@ def generate_pinf_SF(n, gamma, t=5):
 
 
     """
-    start = datetime.now()
-    g1 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 1)
-    g2 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 2)
-    G_int = gen_rand.intd_random_net(g1, g2)
-    time = datetime.now() - start
-    print("...Interdependent Graph Generate Done!", time)
+    if hasGraph:
+        g1 = nx.read_gpickle(files[0])
+        g2 = nx.read_gpickle(files[1])
+        G_int = nx.read_gpickle(files[2])
+        print("...Interdependent Graph Data were given!")
+    else:
+        start = datetime.now()
+        g1 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 1)
+        g2 = gen_rand.networkSF_w_3Dpos_PowerL(n, gamma, 2)
+        G_int = gen_rand.intd_random_net(g1, g2)
+        time = datetime.now() - start
+        print("...Interdependent Graph Generate Done!", time)
 
     p_infs = []
     ps = np.linspace(0.1, 0.9, 20)
@@ -147,9 +155,9 @@ def compute_pinf(G_att, G_init, mut=None):
     comp_set_init = list(nx.connected_components(G_init))
     giant_comp_init = max(comp_set_init, key=len)
 
-    print("giant component : ", len(giant_comp))
-    print("giant component init : ", len(giant_comp_init))
-    print("giant component real : ", mut)
+    # print("giant component : ", len(giant_comp))
+    # print("giant component init : ", len(giant_comp_init))
+    # print("giant component real : ", mut)
 
     p_inf = len(giant_comp) / total_num_nodes
 
@@ -169,12 +177,11 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False):
 
     """
     plt.rcParams.update({'font.size': 14})
-    color = iter(plt.cm.rainbow(np.linspace(0.0, 0.3, len(results))))
+    color = iter(plt.cm.rainbow(np.linspace(0.0, 1, len(results))))
 
     for i, res in enumerate(results):
         pks = res[0]*k
         p_infs = res[1]
-
         plt.plot(pks, p_infs, c=next(color), label=labels[i])
     if p_theory :
         plt.vlines(2.4554, ymin=0, ymax=1, colors='k', linestyles='solid', label='$p_{c}$=2.4554/<k>')
