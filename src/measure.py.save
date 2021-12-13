@@ -23,29 +23,33 @@ def generate_pinf_ER(n, k, t=5):
         - p_infs : [1d array] a probability of mutually connected giant component
 
     """
+
     # g1 = nx.gnp_random_graph(n, k/n)
     # g2 = nx.gnp_random_graph(n, k/n)
-    start = datetime.now()
-    g1 = gen_rand.networkER_w_3Dpos(n, k, 1)
+
+    start = datetime.now(g1 = gen_rand.networkER_w_3Dpos(n, k, 1)
     g2 = gen_rand.networkER_w_3Dpos(n, k, 2)
     G_int = gen_rand.intd_random_net(g1, g2)
     time = datetime.now() - start
     print("...Interdependent Graph Generate Done!", time)
+
     p_infs = []
     ps = np.linspace(0.1, 0.9, 20)
+
     for p in tqdm(ps):
-     print("P(success) = ", p)
-     mean_p_inf = 0
-     start = datetime.now()
-     for i in range(t):
-      print("Test time num", i, "/", t)
-          	# attack G with different p and compute p_inf
-      G_att = att.attack_network(G_int, g1, g2, p, False)
-      p_inf = compute_pinf(G_att, G_int)
-      mean_p_inf += p_inf
-     p_infs.append(mean_p_inf/t)
-    time = datetime.now() - start
-    print("...test: '%f' is Done!" %(p), time)
+    	print("P(success) = ", p)
+    	mean_p_inf = 0
+        start = datetime.now()
+        for i in range(t):
+        	print("Test time num", i, "/", t)
+           	 # attack G with different p and compute p_inf
+        	G_att = att.attack_network(G_int, g1, g2, p, False)
+        	p_inf = compute_pinf(G_att, G_int)
+           	 mean_p_inf += p_inf
+        p_infs.append(mean_p_inf/t)
+        time = datetime.now() - start
+        print("...test: '%f' is Done!" %(p), time)
+
     return ps, np.array(p_infs)
 
 def generate_pinf_SF(n, gamma, t=5):
