@@ -162,44 +162,55 @@ def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
 
     """
 
-    # condition 1 : whether the degree sequence can be a finite simple graph or not
-    # condition 2 : whether the graph has self loop or not
-    # condition 3 : whether the graph follow the power law with a given gamma or not
-    # condition 4 : whether the average degree is same with the expected one.
-    cond1, cond2, cond3, cond4 = False, False, False, False
+    # condition 1 : the degree sequence should be a finite simple graph
+    # condition 2 : the graph should not have self loops
+    # condition 3 : the graph should follow the power law with a given gamma
+    # condition 4 : the average degree should follow the expected one.
+
+    # cond1, cond2, cond3, cond4 = False, False, False, False
     xmin = (gamma-2)*avgdegree/(gamma-1)
+    cond1, cond2, cond3, cond4 = False, False, False, False
+    # conds = []
+    # G_avg_k_list = []
+    
     
     i = 0
-    while not(cond1 and cond2 and cond3 and cond4):
-    
+    while not(cond1 and cond3 and cond4): # without cond2
+        cond1, cond3, cond4 = False, False, False
         s = powerlaw.Power_Law(xmin=xmin, parameters=[gamma], discrete=True).generate_random(N).astype(int)
-        xmean = sum(s)/len(s)
-        cond4 = avgdegree == round(xmean,1)
         cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
-        if cond1 and cond4:
+        if cond1:
             G = nx.configuration_model(s)
             G = nx.Graph(G) # remove parallel edges
-            cond2 = (len(list(nx.selfloop_edges(G))) == 0)
+            # cond2 = (len(list(nx.selfloop_edges(G))) == 0)
+            G.remove_edges_from(nx.selfloop_edges(G)) # remove self-loop edges
+            
             gamma_real = SF_powerlaw_exp(G)
             r_gamma_real = round(gamma_real, 1) 
             cond3 = (r_gamma_real == gamma)
         
+            G_nodes = len(G.nodes())
+            G_sum_k = np.sum([G.degree()[i] for i in G.nodes()])
+            G_avg_k = G_sum_k / G_nodes
+            cond4 = (avgdegree*(1.03) >= G_avg_k) & (avgdegree*(0.97) <= G_avg_k)
+            # G_avg_k_list.append(G_avg_k)
+        
         i += 1
         print(i, end='\r')
-        
+        # conds.append([cond1,cond2,cond3,cond4])
+
     # G = nx.Graph(G)  # remove parallel edges
     
-    if (i == 1000):
+    if (False):
         print("Couldn't generate Scale-Free Network based on given powerLaw parameters $ avg. degree.\n(iter: %d. Last gamma:%f. avg. degree: %f)"
-            %(i,gamma_real,xmean))
+            %(i,gamma_real,G_avg_k))
     else:
-        print(i,gamma_real,xmean)
         print("Generate Scale-Free Network based on given powerLaw parameters & avg. degree \n(iter: %d. Last gamma:%f. avg. degree: %f)"
-            %(i,gamma_real,xmean))
+            %(i,gamma_real,G_avg_k))
 
     H = nodeSetting(G, layer)
 
-    return H
+    return H #, conds, G_avg_k_list
 
 
 def intd_random_net(G_a, G_b):
