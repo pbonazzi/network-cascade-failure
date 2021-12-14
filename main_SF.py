@@ -34,7 +34,7 @@ def main(n, g, k):
     # np.savetxt('./notebooks/results/1012/SFn2000_30.csv', SFn2000_30, delimiter=',')
 
     print("\n++++++++++++++++++++++++++++++")
-    print("SF N%d gamma %f <k> = %f Graph Generate..." %(n,g,k))
+    print("v1.0 SF N%d gamma %f <k> = %f Graph Generate..." %(n,g,k))
     print("++++++++++++++++++++++++++++++\n")
 
     SFn_a = networkSF_w_3Dpos_PowerL(n,g,k,1)
