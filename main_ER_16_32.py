@@ -7,7 +7,7 @@ print("ER N1000 Test Start...")
 print("++++++++++++++++++++++++++++++\n")
 
 ERn16000k4 = generate_pinf_ER(16000, 4, 10)
-np.savetxt('./notebooks/results/1012/ERn16000k4csv', ERn16000k4, delimiter=',')
+np.savetxt('./notebooks/results/1012/ERn16000k4.csv', ERn16000k4, delimiter=',')
 
 print("\n++++++++++++++++++++++++++++++")
 print("ER N1000 Test Start...")
