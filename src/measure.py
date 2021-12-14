@@ -121,6 +121,26 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, t=5):
 
     return ps, np.array(p_infs)
 
+def generate_pinf_real_single(G_single, t=5):
+
+    p_infs = []
+    ps = np.linspace(0, 1, 20)
+
+    for p in ps:
+        mean_p_inf = 0
+        for i in range(t):
+            # attack G with different p and compute p_inf
+            G_att = att.attack_network(G_single, p=p)
+            print("p :", p)
+            p_inf = compute_pinf(G_att, G_single)
+            mean_p_inf += p_inf
+        p_infs.append(mean_p_inf/t)
+
+    return ps, np.array(p_infs)
+
+
+
+
 def compute_pinf(G_att, G_init, mut=None):
     """
     compute a probability of mutually connected giant component which is
@@ -149,10 +169,11 @@ def compute_pinf(G_att, G_init, mut=None):
     giant_comp_init = max(comp_set_init, key=len)
 
     print("giant component : ", len(giant_comp))
-    print("giant component init : ", len(giant_comp_init))
+    print("giant component init : ", len(giant_comp_init), total_num_nodes)
     print("giant component real : ", mut)
 
-    p_inf = len(giant_comp) / total_num_nodes
+    p_inf = len(giant_comp) / len(giant_comp_init)
+    #p_inf = len(giant_comp) / total_num_nodes
 
     return p_inf
 
