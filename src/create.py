@@ -166,14 +166,14 @@ def networkSF_w_3Dpos_PowerL(N, gamma, avgdegree, layer=1):
     # condition 2 : the graph should follow the power law with a given gamma
     # condition 3 : the average degree should follow the expected one.
 
-    # xmin = (gamma-2)*avgdegree/(gamma-1)
+    xmin = (gamma-2)*avgdegree/(gamma-1)
     cond1, cond2, cond3 = False, False, False
     
     i = 0
 
     while not(cond1 and cond2 and cond3):
         cond1, cond2, cond3 = False, False, False
-        s = powerlaw.Power_Law(xmin=2, parameters=[gamma], discrete=True).generate_random(N).astype(int)
+        s = powerlaw.Power_Law(xmin=xmin, parameters=[gamma], discrete=True).generate_random(N).astype(int)
         cond1 = nx.is_valid_degree_sequence_erdos_gallai(s)
         if cond1:
             G = nx.configuration_model(s)
