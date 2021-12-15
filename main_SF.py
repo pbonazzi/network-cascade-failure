@@ -10,10 +10,10 @@ import click
 @click.option('--n', type=int, default = 20)
 @click.option('--g', type=float, default = 3)
 @click.option('--k', type=float, default = 4)
-@click.option('--T', type=bool, default = True)
+@click.option('--t', type=bool, default = True)
 
-def main(n, g, k, T):
-    if T:
+def main(n, g, k, t):
+    if t:
         file_a = "data/pickle/SF/SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+"_a.gpickle"
         file_b = "data/pickle/SF/SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+"_b.gpickle"
         file_intd = "data/pickle/SF/int_SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+".gpickle"
