@@ -9,7 +9,7 @@ from src.measure import *
 
 ERn500k24 = np.loadtxt('./notebooks/results/ERn250k4.csv',delimiter=",")
 
-plot_pinf([[ERn500k24[0],ERn500k24[1]]], path="./notebooks/figure/realWorld/ER_inter_n500_k24.png")
+plot_pinf([[ERn500k24[0],ERn500k24[1]]], path="../notebooks/figure/realWorld/ER_inter_n500_k24.png")
 
 
 #SFn500g25 = networkSF_w_3Dpos_PowerL(500, )
