@@ -1,3 +1,9 @@
+import sys
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
 from src.attack import *
 from src.create import *
 from src.measure import *
@@ -10,7 +16,7 @@ import click
 @click.option('--n', type=int, default = 20)
 @click.option('--g', type=float, default = 3)
 @click.option('--k', type=float, default = 4)
-@click.option('--test', type=bool, default = True)
+@click.option('--test', type=bool, default = False)
 @click.option('--t', type=int, default = 10)
 
 def main(n, g, k, test, t):
