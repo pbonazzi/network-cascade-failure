@@ -1,18 +1,12 @@
 # Welcome to network cascade failure
 
-Modern systems such as water supply, transportation and power  stations  are  increasingly  coupled  together.  These  systems  are  called interdependent networks (IN). 
+Modern systems are  increasingly  coupled  together and interdependent. For example, train and metro networks are interdependent in destination planning.
 
-Train and metro are example of two interdependent networks when a person uses them both to reach a destination.
+<p align="center">
+  <img width="auto" height="auto" src="https://github.com/pbonazzi/21-network-cascade-failure/blob/main/notebooks/figure/metro_train.png?style=centerme">
+</p>
 
-img[src$="centerme"] {
-  display:block;
-  margin: 0 auto;
-}
-
-![alt text](https://github.com/pbonazzi/21-network-cascade-failure/blob/main/notebooks/figure/metro_train.png?style=centerme)
-
-
-In this project we follow the approach presented in (Sergey V Buldyrev et al. 2010a), and we simulate a cascade of failures on synthetic random Erdos–Renyi IN, Scale-free IN, and a real world IN : the Paris Multilayer Transport Network (Asgari et al. 2016). 
+Following the approach presented in (Sergey V Buldyrev et al. 2010a), we simulate a cascade of failures on synthetic random Erdos–Renyi IN, Scale-free IN, and a real world IN : the Paris Multilayer Transport Network (Asgari et al. 2016). 
 
 ## 1. Reproducibility
 
