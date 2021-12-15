@@ -96,7 +96,7 @@ def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
 
     return ps, np.array(p_infs)
 
-def generate_pinf_real(n_file, e_file, edges_crosslayer, t=5):
+def generate_pinf_real(n_file, e_file, edges_crosslayer, t=10):
 
     start = datetime.now()
 
@@ -127,6 +127,26 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, t=5):
         print("...test: '%f' is Done!" %(p), time)
 
     return ps, np.array(p_infs)
+
+def generate_pinf_real_single(G_single, t=5):
+
+    p_infs = []
+    ps = np.linspace(0, 1, 20)
+
+    for p in ps:
+        mean_p_inf = 0
+        for i in range(t):
+            # attack G with different p and compute p_inf
+            G_att = att.attack_network(G_single, p=p)
+            print("p :", p)
+            p_inf = compute_pinf(G_att, G_single)
+            mean_p_inf += p_inf
+        p_infs.append(mean_p_inf/t)
+
+    return ps, np.array(p_infs)
+
+
+
 
 def compute_pinf(G_att, G_init, mut=None):
     """
@@ -159,12 +179,13 @@ def compute_pinf(G_att, G_init, mut=None):
     # print("giant component init : ", len(giant_comp_init))
     # print("giant component real : ", mut)
 
-    p_inf = len(giant_comp) / total_num_nodes
+    p_inf = len(giant_comp) / len(giant_comp_init)
+    #p_inf = len(giant_comp) / total_num_nodes
 
     return p_inf
 
 
-def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False):
+def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, residual=False):
     """
     plotting the figure of p*k vs p_inf
 
@@ -183,18 +204,24 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False):
     for i, res in enumerate(results):
         pks = res[0]*k
         p_infs = res[1]
-        plt.plot(pks, p_infs, c=next(color), label=labels[i], marker=marker[i], mfc = 'none')
+
+        plt.plot(pks, p_infs, c=next(color), linewidth=1.5)
+
     if p_theory :
-        plt.vlines(2.4554, ymin=0, ymax=1, colors='k', linestyles='solid', label='$p_{c}$=2.4554/<k>')
+        plt.vlines(2.4554, ymin=0, ymax=1, colors='r', linestyles='dashdot', label='$p_{c}$=2.4554/<k>')
     if k > 1:
         plt.xlabel('p<k>')
     else:
         plt.xlabel('p')
         #plt.xlabel('$P_{node}$(fail)')
+    if residual:
+    	plt.hlines(results[0][1][0], xmin=0, xmax=1,linestyles='dotted', colors='k')
     plt.ylabel('$P_{inf}$')
-    plt.xlim(xlim)
+    plt.xlim(0,1)
+    plt.ylim(0,1)
     #plt.ylabel('$P_{node}$(in Gcomponent)')
-    plt.legend()
+    if labels:
+    	plt.legend(labels)
     plt.savefig(path, dpi=300, bbox_inches='tight')
     plt.grid()
     plt.show()
