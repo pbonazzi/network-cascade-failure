@@ -18,13 +18,13 @@ def main(n, g, k):
     file_intd = "data/pickle/SF/int_SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+".gpickle"
 
     print("\n++++++++++++++++++++++++++++++")
-    print("SF N2000 gamma 2.7 Test Start...")
+    print("v1.0 SF N%d gamma %f <k> = %f Graph Cascade Test..." %(n,g,k))
     print("++++++++++++++++++++++++++++++\n")
 
     gPaths = [file_a,file_b,file_intd]
-    SFn2000_27 = generate_pinf_SF(t=10, hasGraph=True, files = gPaths)
-    filepath = "notebooks/results/SF/SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+"_a.gpickle"
-    np.savetxt('./notebooks/results/1012/SFn2000_27.csv', SFn2000_27, delimiter=',')
+    result = generate_pinf_SF(t=10, hasGraph=True, files = gPaths)
+    filepath = "notebooks/results/1012/SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+".csv"
+    np.savetxt(filepath, result, delimiter=',')
 
     # print("\n++++++++++++++++++++++++++++++")
     # print("v1.0 SF N%d gamma %f <k> = %f Graph Generate..." %(n,g,k))
