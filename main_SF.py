@@ -22,7 +22,7 @@ def main(n, g, k):
     print("++++++++++++++++++++++++++++++\n")
 
     gPaths = [file_a,file_b,file_intd]
-    result = generate_pinf_SF(t=10, hasGraph=True, files = gPaths)
+    result = generate_pinf_SF(t=50, hasGraph=True, files = gPaths)
     filepath = "notebooks/results/1012/SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+".csv"
     np.savetxt(filepath, result, delimiter=',')
 
