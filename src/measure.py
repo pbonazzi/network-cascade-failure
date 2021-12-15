@@ -199,12 +199,14 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     """
     plt.rcParams.update({'font.size': 14})
     color = iter(plt.cm.rainbow(np.linspace(0.0, 1, len(results))))
+    marker = ['v', 's', 'D','v']
 
     for i, res in enumerate(results):
         pks = res[0]*k
         p_infs = res[1]
-        #plt.plot(pks, p_infs, c=next(color), label=labels[i],linewidth=1.5)
+
         plt.plot(pks, p_infs, c=next(color), linewidth=1.5)
+
     if p_theory :
         plt.vlines(2.4554, ymin=0, ymax=1, colors='r', linestyles='dashdot', label='$p_{c}$=2.4554/<k>')
     if k > 1:
