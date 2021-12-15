@@ -2,6 +2,8 @@
 
 Modern systems such as water supply, transportation and power  stations  are  increasingly  coupled  together.  These  systems  are  called interdependent networks (IN). 
 
+[Image](./blob/main/notebooks/figure/metro.png)
+
 Following the approach presented in (Sergey V Buldyrev et al. 2010a), this paper simulates a cascade of failures and analyse the robustness of synthetic random Erdos–Renyi IN, Scale-free IN, and a real world IN : the Paris Multilayer Transport Network (Asgari et al. 2016). 
 
 ## 1. Reproducibility
