@@ -1,6 +1,6 @@
 # Welcome to network cascade failure
 
-Modern systems are  increasingly  coupled  together and interdependent. For example, train and metro networks are interdependent in destination planning.
+Modern systems are  increasingly  coupled  together and interdependent. For example, train and metro networks are interdependent networks in destination planning problems.
 
 <p align="center">
   <img width="auto" height="auto" src="https://github.com/pbonazzi/21-network-cascade-failure/blob/main/notebooks/figure/metro_train.png?style=centerme">
