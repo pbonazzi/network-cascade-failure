@@ -4,15 +4,22 @@ from src.measure import *
 
 ## Analisy ER and SF Network 
 
-ERn1000k4 = generate_pinf_ER(1000, 4)
-ERn2000k4 = generate_pinf_ER(2000, 4)
-ERn4000k4 = generate_pinf_ER(4000, 4)
-ERn8000k4 = generate_pinf_ER(8000, 4)
+ERn1000k4 = generate_pinf_ER(1000, 4, t=20)
+np.savetxt('./notebooks/results/sy/er/ERn1000k4.csv', ERn1000k4, delimiter=',')
 
-np.savetxt('./notebooks/results/sy/er/ERn1000k4.csv', ERn1000k4, delimiter=',')  
-np.savetxt('./notebooks/results/sy/er/ERn2000k4.csv', ERn2000k4, delimiter=',')  
+ERn2000k4 = generate_pinf_ER(2000, 4,t=20)
+np.savetxt('./notebooks/results/sy/er/ERn2000k4.csv', ERn2000k4, delimiter=',')
+
+ERn4000k4 = generate_pinf_ER(4000, 4,t=20)
 np.savetxt('./notebooks/results/sy/er/ERn4000k4.csv', ERn4000k4, delimiter=',')  
-np.savetxt('./notebooks/results/sy/er/ERn8000k4.csv', ERn8000k4, delimiter=',')  
+
+#ERn8000k4 = generate_pinf_ER(8000, 4,t=20)
+#np.savetxt('./notebooks/results/sy/er/ERn8000k4.csv', ERn8000k4, delimiter=',') 
+
+#np.savetxt('./notebooks/results/sy/er/ERn1000k4.csv', ERn1000k4, delimiter=',')  
+#np.savetxt('./notebooks/results/sy/er/ERn2000k4.csv', ERn2000k4, delimiter=',')  
+#np.savetxt('./notebooks/results/sy/er/ERn4000k4.csv', ERn4000k4, delimiter=',')  
+#np.savetxt('./notebooks/results/sy/er/ERn8000k4.csv', ERn8000k4, delimiter=',')  
 
 #ER1000= np.loadtxt('./notebooks/results/1012/ERn1000k4.csv',delimiter=",")
 #ER2000= np.loadtxt('./notebooks/results/1012/ERn2000k4.csv',delimiter=",")

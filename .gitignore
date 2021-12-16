@@ -116,4 +116,5 @@ dmypy.json
 # Config
 /.idea
 /.DS_STORE
+*/.DS_STORE
 
