@@ -29,7 +29,7 @@ def main(n, k, test, t):
         print("++++++++++++++++++++++++++++++\n")
 
         gPaths = [file_a,file_b,file_intd]
-        result = generate_pinf_ER(t=t, hasGraph=True, files = gPaths)
+        result = generate_pinf_ER(n=0, k=0, t=t, hasGraph=True, files = gPaths)
         filepath = "../notebooks/results/ERn"+str(n)+"_k"+str(int(k))+".csv"
         np.savetxt(filepath, result, delimiter=',')
     
