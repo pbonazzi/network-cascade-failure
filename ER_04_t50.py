@@ -1,8 +1,8 @@
 from src.measure import *
 
 print("\n++++++++++++++++++++++++++++++")
-print("ER N4000 Test Start...")
+print("ER N4000 Test Start...sy")
 print("++++++++++++++++++++++++++++++\n")
 
-ERn4000k4_20 = generate_pinf_ER(4000, 4, 20)
-np.savetxt('./notebooks/results/ER/ERn4000k4_20.csv', ERn4000k4_20, delimiter=',')
+ERn4000k4_20 = generate_pinf_ER(4000, 4, 10)
+np.savetxt('./notebooks/results/sy/er/t20/ERn4000t10.csv', ERn4000k4_20, delimiter=',')
