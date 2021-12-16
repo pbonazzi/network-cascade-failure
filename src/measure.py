@@ -9,6 +9,7 @@ import src.attack as att
 
 
 def generate_pinf_ER(n, k, t=5):
+
     """
     generate p_inf of ER model along with the 1-p from [0,1]
 
@@ -23,16 +24,26 @@ def generate_pinf_ER(n, k, t=5):
         - p_infs : [1d array] a probability of mutually connected giant component
 
     """
+    if hasGraph:
+        g1 = nx.read_gpickle(files[0])
+        g2 = nx.read_gpickle(files[1])
+        G_int = nx.read_gpickle(files[2])
+        print("...Interdependent Graph Data were given!")
+    else:
+        start = datetime.now()
+        g1 = gen_rand.networkER_w_3Dpos(n, k, 1)
+        g2 = gen_rand.networkER_w_3Dpos(n, k, 2)
+        G_int = gen_rand.intd_random_net(g1, g2)
+        time = datetime.now() - start
+        print("...Interdependent Graph Generate Done!", time)
     # g1 = nx.gnp_random_graph(n, k/n)
     # g2 = nx.gnp_random_graph(n, k/n)
-    start = datetime.now()
-    g1 = gen_rand.networkER_w_3Dpos(n, k, 1)
-    g2 = gen_rand.networkER_w_3Dpos(n, k, 2)
-    G_int = gen_rand.intd_random_net(g1, g2)
-    time = datetime.now() - start
-    print("...Interdependent Graph Generate Done!", time)
+    
     p_infs = []
+
     ps = np.linspace(0.5, 0.9,8)
+
+
     for p in tqdm(ps):
         print("P(success) = ", p)
         mean_p_inf = 0
