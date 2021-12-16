@@ -34,19 +34,20 @@ def generate_pinf_ER(n, k, t=30):
     p_infs = []
     ps = np.linspace(0, 1, 10)
     for p in tqdm(ps):
-     print("P(success) = ", p)
-     mean_p_inf = 0
-     start = datetime.now()
-     for i in range(t):
-      print("Test time num", i, "/", t)
-          	# attack G with different p and compute p_inf
-      G_att = att.attack_network(G_int, g1, g2, p, False)
-      p_inf = compute_pinf(G_att, G_int)
-      mean_p_inf += p_inf
-     p_infs.append(mean_p_inf/t)
+        print("P(success) = ", p)
+        mean_p_inf = 0
+        start = datetime.now()
+        for i in range(t):
+            print("Test time num", i, "/", t)
+            # attack G with different p and compute p_inf
+            G_att = att.attack_network(G_int, g1, g2, p, False)
+            p_inf = compute_pinf(G_att, G_int)
+            mean_p_inf += p_inf
+        p_infs.append(mean_p_inf / t)
     time = datetime.now() - start
-    print("...test: '%f' is Done!" %(p), time)
+    print("...test: '%f' is Done!" % (p), time)
     return ps, np.array(p_infs)
+
 
 def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
     """
@@ -90,18 +91,18 @@ def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
             G_att = att.attack_network(G_int, g1, g2, p, False)
             p_inf = compute_pinf(G_att, G_int)
             mean_p_inf += p_inf
-        p_infs.append(mean_p_inf/t)
+        p_infs.append(mean_p_inf / t)
         time = datetime.now() - start
-        print("...test: '%f' is Done!" %(p), time)
+        print("...test: '%f' is Done!" % (p), time)
 
     return ps, np.array(p_infs)
 
-def generate_pinf_real(n_file, e_file, edges_crosslayer, t=50):
 
+def generate_pinf_real(n_file, e_file, edges_crosslayer, t=50):
     start = datetime.now()
 
-    g2, df_n_train, df_e_train = gen_rand.paris_GenTranspNet(n_file,e_file,'train',2)
-    g1, df_n_metro, df_e_metro = gen_rand.paris_GenTranspNet(n_file,e_file,'metro',1)
+    g2, df_n_train, df_e_train = gen_rand.paris_GenTranspNet(n_file, e_file, 'train', 2)
+    g1, df_n_metro, df_e_metro = gen_rand.paris_GenTranspNet(n_file, e_file, 'metro', 1)
 
     G_int, e_m_tr = gen_rand.paris_GenMultiTranspNet(g1, g2, edges_crosslayer)
 
@@ -117,19 +118,19 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, t=50):
         for i in range(t):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
-            G_casc, gcas1,gcas2 = att.cascade_rec(G_int, g1, g2, 1, False)
+            G_casc, gcas1, gcas2 = att.cascade_rec(G_int, g1, g2, 1, False)
             comp_set = list(nx.connected_components(G_casc))
             giant_comp = max(comp_set, key=len)
             p_inf = compute_pinf(G_att, G_int, mut=len(giant_comp))
             mean_p_inf += p_inf
-        p_infs.append(mean_p_inf/t)
+        p_infs.append(mean_p_inf / t)
         time = datetime.now() - start
-        print("...test: '%f' is Done!" %(p), time)
+        print("...test: '%f' is Done!" % (p), time)
 
     return ps, np.array(p_infs)
 
-def generate_pinf_real_single(G_single, t=50):
 
+def generate_pinf_real_single(G_single, t=50):
     p_infs = []
     ps = np.linspace(0, 1, 20)
 
@@ -141,11 +142,9 @@ def generate_pinf_real_single(G_single, t=50):
             print("p :", p)
             p_inf = compute_pinf(G_att, G_single)
             mean_p_inf += p_inf
-        p_infs.append(mean_p_inf/t)
+        p_infs.append(mean_p_inf / t)
 
     return ps, np.array(p_infs)
-
-
 
 
 def compute_pinf(G_att, G_init, mut=None):
@@ -160,15 +159,15 @@ def compute_pinf(G_att, G_init, mut=None):
      - p_inf : [float] number of nodes belong to the giant component / total number of nodes
 
     """
-    
-    if len(G_att.nodes())== 0 :
+
+    if len(G_att.nodes()) == 0:
         print("[W] : Computing probabilities for an empty graph returns 0.")
         return 0
     total_num_nodes = len(list(G_init))
 
-    if mut != None :
-        total_num_nodes = mut # cacasde recursive first and then measure the connected components.
-    
+    if mut != None:
+        total_num_nodes = mut  # cacasde recursive first and then measure the connected components.
+
     comp_set = list(nx.connected_components(G_att))
     giant_comp = max(comp_set, key=len)
 
@@ -180,7 +179,7 @@ def compute_pinf(G_att, G_init, mut=None):
     # print("giant component real : ", mut)
 
     p_inf = len(giant_comp) / len(giant_comp_init)
-    #p_inf = len(giant_comp) / total_num_nodes
+    # p_inf = len(giant_comp) / total_num_nodes
 
     return p_inf
 
@@ -199,29 +198,29 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     """
     plt.rcParams.update({'font.size': 14})
     color = iter(plt.cm.rainbow(np.linspace(0.0, 1, len(results))))
-    marker = ['v', 's', 'D','v']
+    marker = ['v', 's', 'D', 'v']
 
     for i, res in enumerate(results):
-        pks = res[0]*k
+        pks = res[0] * k
         p_infs = res[1]
 
         plt.plot(pks, p_infs, c=next(color), linewidth=2)
 
-    if p_theory :
+    if p_theory:
         plt.vlines(2.4554, ymin=0, ymax=1, colors='k', linestyles='dashdot', label='$p_{c}$=2.4554/<k>')
     if k > 1:
         plt.xlabel('p<k>')
     else:
         plt.xlabel('p')
-        #plt.xlabel('$P_{node}$(fail)')
+        # plt.xlabel('$P_{node}$(fail)')
     if residual:
-    	plt.hlines(results[0][1][0], xmin=0, xmax=1,linestyles='dotted', colors='k')
+        plt.hlines(results[0][1][0], xmin=0, xmax=1, linestyles='dotted', colors='k')
     plt.ylabel('$P_{inf}$')
-    plt.xlim(2,3)
-    plt.ylim(0,1)
-    #plt.ylabel('$P_{node}$(in Gcomponent)')
+    plt.xlim(2, 3)
+    plt.ylim(0, 1)
+    # plt.ylabel('$P_{node}$(in Gcomponent)')
     if labels:
-    	plt.legend(labels)
+        plt.legend(labels)
     plt.savefig(path, dpi=300, bbox_inches='tight')
     plt.grid()
     plt.show()
