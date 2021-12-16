@@ -8,7 +8,7 @@ import src.create as gen_rand
 import src.attack as att
 
 
-def generate_pinf_ER(n, k, t=30):
+def generate_pinf_ER(n, k, t=5):
     """
     generate p_inf of ER model along with the 1-p from [0,1]
 
@@ -32,7 +32,7 @@ def generate_pinf_ER(n, k, t=30):
     time = datetime.now() - start
     print("...Interdependent Graph Generate Done!", time)
     p_infs = []
-    ps = np.linspace(0, 1, 10)
+    ps = np.linspace(0.5, 0.9,8)
     for p in tqdm(ps):
         print("P(success) = ", p)
         mean_p_inf = 0
@@ -216,7 +216,7 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     if residual:
         plt.hlines(results[0][1][0], xmin=0, xmax=1, linestyles='dotted', colors='k')
     plt.ylabel('$P_{inf}$')
-    plt.xlim(2, 3)
+    plt.xlim(2,4)
     plt.ylim(0, 1)
     # plt.ylabel('$P_{node}$(in Gcomponent)')
     if labels:

@@ -2,16 +2,30 @@ from src.attack import *
 from src.create import *
 from src.measure import *
 
+'''
 ## Analisy ER and SF Network 
+ERn250s = generate_pinf_ER(250, 4, t=10)
+np.savetxt('./notebooks/results/sy/er/scale/ERn250s.csv', ERn250s, delimiter=',')
+ERn500s = generate_pinf_ER(500, 4, t=10)
+np.savetxt('./notebooks/results/sy/er/scale/ERn500s.csv', ERn500s, delimiter=',')
+ERn1000s = generate_pinf_ER(1000, 4, t=10)
+np.savetxt('./notebooks/results/sy/er/scale/ERn1000s.csv', ERn1000s, delimiter=',')
+ERn1500s = generate_pinf_ER(1500, 4, t=10)
+np.savetxt('./notebooks/results/sy/er/scale/ERn1500s.csv', ERn1500s, delimiter=',')
+ERn2000s = generate_pinf_ER(2000, 4, t=10)
+np.savetxt('./notebooks/results/sy/er/scale/ERn2000s.csv', ERn2000s, delimiter=',')
 
-ERn1000k4 = generate_pinf_ER(1000, 4, t=20)
-np.savetxt('./notebooks/results/sy/er/ERn1000k4.csv', ERn1000k4, delimiter=',')
+'''
+## lin20 btw 2.00-3.50 (t=30)
 
-ERn2000k4 = generate_pinf_ER(2000, 4,t=20)
-np.savetxt('./notebooks/results/sy/er/ERn2000k4.csv', ERn2000k4, delimiter=',')
+ERn8000t5 = generate_pinf_ER(8000, 4, t=5)
+np.savetxt('./notebooks/results/sy/er/t20/ERn8000t5.csv', ERn8000t5, delimiter=',')
 
-ERn4000k4 = generate_pinf_ER(4000, 4,t=20)
-np.savetxt('./notebooks/results/sy/er/ERn4000k4.csv', ERn4000k4, delimiter=',')  
+'''
+'''
+
+#ERn4000k4 = generate_pinf_ER(4000, 4,t=20)
+#np.savetxt('./notebooks/results/sy/er/ERn4000k4.csv', ERn4000k4, delimiter=',')  
 
 #ERn8000k4 = generate_pinf_ER(8000, 4,t=20)
 #np.savetxt('./notebooks/results/sy/er/ERn8000k4.csv', ERn8000k4, delimiter=',') 
