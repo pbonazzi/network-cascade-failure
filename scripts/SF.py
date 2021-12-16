@@ -31,7 +31,7 @@ def main(n, g, k, test, t):
 
         gPaths = [file_a,file_b,file_intd]
         result = generate_pinf_SF(t=t, hasGraph=True, files = gPaths)
-        filepath = "../notebooks/results/1012/SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+".csv"
+        filepath = "../notebooks/results/SF/SFn"+str(n)+"_"+str(int(g*10))+"_k"+str(int(k))+".csv"
         np.savetxt(filepath, result, delimiter=',')
     
     else:
