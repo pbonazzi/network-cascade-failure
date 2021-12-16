@@ -18,9 +18,6 @@ np.savetxt('./notebooks/results/sy/er/ERn8000k4.csv', ERn8000k4, delimiter=',')
 #ER2000= np.loadtxt('./notebooks/results/1012/ERn2000k4.csv',delimiter=",")
 #ER4000= np.loadtxt('./notebooks/results/1012/ERn4000k4.csv',delimiter=",")
 
-#plot_pinf([[ERn500k24[0],ERn500k24[1]]], path="../notebooks/figure/realWorld/ER_inter_n500_k24.png")
-
-
 #plot_pinf([ER1000, ER2000, ER4000], k=4,labels= ["ER model, N=1000, <k>=4","ER model, N=2000, <k>=4","ER model, N=4000, <k>=4"], path="./notebooks/figure/ER_new.png", p_theory=True)
 
 

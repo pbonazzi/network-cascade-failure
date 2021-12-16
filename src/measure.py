@@ -8,7 +8,7 @@ import src.create as gen_rand
 import src.attack as att
 
 
-def generate_pinf_ER(n, k, t=5):
+def generate_pinf_ER(n, k, t=30):
     """
     generate p_inf of ER model along with the 1-p from [0,1]
 
@@ -32,7 +32,7 @@ def generate_pinf_ER(n, k, t=5):
     time = datetime.now() - start
     print("...Interdependent Graph Generate Done!", time)
     p_infs = []
-    ps = np.linspace(0.1, 0.9, 20)
+    ps = np.linspace(0, 1, 10)
     for p in tqdm(ps):
      print("P(success) = ", p)
      mean_p_inf = 0
@@ -96,7 +96,7 @@ def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
 
     return ps, np.array(p_infs)
 
-def generate_pinf_real(n_file, e_file, edges_crosslayer, t=10):
+def generate_pinf_real(n_file, e_file, edges_crosslayer, t=50):
 
     start = datetime.now()
 
@@ -128,7 +128,7 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, t=10):
 
     return ps, np.array(p_infs)
 
-def generate_pinf_real_single(G_single, t=5):
+def generate_pinf_real_single(G_single, t=50):
 
     p_infs = []
     ps = np.linspace(0, 1, 20)
@@ -205,10 +205,10 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
         pks = res[0]*k
         p_infs = res[1]
 
-        plt.plot(pks, p_infs, c=next(color), linewidth=1.5)
+        plt.plot(pks, p_infs, c=next(color), linewidth=2)
 
     if p_theory :
-        plt.vlines(2.4554, ymin=0, ymax=1, colors='r', linestyles='dashdot', label='$p_{c}$=2.4554/<k>')
+        plt.vlines(2.4554, ymin=0, ymax=1, colors='k', linestyles='dashdot', label='$p_{c}$=2.4554/<k>')
     if k > 1:
         plt.xlabel('p<k>')
     else:
@@ -217,7 +217,7 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     if residual:
     	plt.hlines(results[0][1][0], xmin=0, xmax=1,linestyles='dotted', colors='k')
     plt.ylabel('$P_{inf}$')
-    plt.xlim(0,1)
+    plt.xlim(2,3)
     plt.ylim(0,1)
     #plt.ylabel('$P_{node}$(in Gcomponent)')
     if labels:
