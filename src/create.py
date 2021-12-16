@@ -265,12 +265,21 @@ def intdNetworkDraw(intd_G, nodeSize):
         x_b, y_b, z_b = [i for i in pos_b]
 
         if z_a != z_b:
-            alpha = 0.1  # If the edge connect two nodes in different layer, the edge transparency set differently.
+            alpha = 0.5  # If the edge connect two nodes in different layer, the edge transparency set differently.
         else:
             alpha = 1
         ax.plot([x_a, x_b], [y_a, y_b], [z_a, z_b], color="tab:gray", alpha=alpha)
 
     # ax.set_axis_off()
+    ax.xaxis.set_ticklabels([])
+    ax.yaxis.set_ticklabels([])
+    ax.zaxis.set_ticklabels([])
+    for line in ax.xaxis.get_ticklines():
+        line.set_visible(False)
+    for line in ax.yaxis.get_ticklines():
+        line.set_visible(False)
+    for line in ax.zaxis.get_ticklines():
+        line.set_visible(False)
     plt.show()
     return
 
