@@ -8,7 +8,7 @@ import src.create as gen_rand
 import src.attack as att
 
 
-def generate_pinf_ER(n, k, t=5):
+def generate_pinf_ER(n, k, t=5, hasGraph = None):
 
     """
     generate p_inf of ER model along with the 1-p from [0,1]
