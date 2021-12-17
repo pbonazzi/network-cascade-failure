@@ -18,8 +18,11 @@ np.savetxt('./notebooks/results/sy/er/scale/ERn2000s.csv', ERn2000s, delimiter='
 '''
 ## lin20 btw 2.00-3.50 (t=30)
 
-ERn8000t5 = generate_pinf_ER(8000, 4, t=5)
-np.savetxt('./notebooks/results/sy/er/t20/ERn8000t5.csv', ERn8000t5, delimiter=',')
+ERn4000t15 = generate_pinf_ER(4000, 4, t=15)
+np.savetxt('./notebooks/results/sy/er/t20/ERn4000t15.csv', ERn4000t15, delimiter=',')
+
+#ERn8000t5 = generate_pinf_ER(8000, 4, t=5)
+#np.savetxt('./notebooks/results/sy/er/t20/ERn8000t5.csv', ERn8000t5, delimiter=',')
 
 '''
 '''
