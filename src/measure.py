@@ -41,7 +41,7 @@ def generate_pinf_ER(n, k, t=5, hasGraph = False, files=[]):
     
     p_infs = []
 
-    ps = np.linspace(0,1,20)
+    ps = np.linspace(0.5,0.9,10)
 
 
     for p in tqdm(ps):
@@ -227,8 +227,8 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     if residual:
         plt.hlines(results[0][1][0], xmin=0, xmax=1, linestyles='dotted', colors='k')
     plt.ylabel('$P_{inf}$')
-    plt.xlim(0,1)
-    plt.ylim(0.2, 1)
+    plt.xlim(2.0,4.0)
+    plt.ylim(0,1)
     # plt.ylabel('$P_{node}$(in Gcomponent)')
     if labels:
         plt.legend(labels)
