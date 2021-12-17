@@ -4,7 +4,7 @@
 
 ```
 git clone https://github.com/pbonazzi/21-11-network-cascade-failure.git
-cd 21-11-network-cascade-failure
+cd 21-network-cascade-failure
 ```
 
 ### 2. Set up the environment 
