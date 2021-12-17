@@ -237,7 +237,7 @@ def intd_random_net(G_a, G_b):
 
     return intd_G
 
-def intdNetworkDraw(intd_G, nodeSize):
+def intdNetworkDraw(intd_G, nodeSize=10):
     """ Draw Interdependent Network
 
     Refer to each node's 3D coordinates.

@@ -223,15 +223,16 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     - p_theory: [float] theoretical value of p_c
 
     """
+    plt.figure(figsize=(10,7))
     plt.rcParams.update({'font.size': 14})
     color = iter(plt.cm.rainbow(np.linspace(0.0, 1, len(results))))
-    marker = ['v', 's', 'D', 'v']
+    marker = ['o', 's', 'D', 'v']
 
     for i, res in enumerate(results):
         pks = res[0] * k
         p_infs = res[1]
 
-        plt.plot(pks, p_infs, c=next(color), linewidth=2, marker = marker[i])
+        plt.plot(pks, p_infs, c=next(color), linewidth=2, marker = marker[i], mfc = "None")
 
     if p_theory:
         plt.vlines(2.4554, ymin=0, ymax=1, colors='k', linestyles='dashdot', label='$p_{c}$=2.4554/<k>')
@@ -243,7 +244,7 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     if residual:
         plt.hlines(results[0][1][0], xmin=0, xmax=1, linestyles='dotted', colors='k')
     plt.ylabel('$P_{inf}$')
-    plt.xlim(0,0.9)
+    # plt.xlim(0,0.9)
     plt.ylim(0, 1)
     # plt.ylabel('$P_{node}$(in Gcomponent)')
     if labels:
