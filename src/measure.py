@@ -8,8 +8,7 @@ import src.create as gen_rand
 import src.attack as att
 
 
-def generate_pinf_ER(n, k, t=5, hasGraph = False, files=[]):
-
+def generate_pinf_ER(n, k, t=5, hasGraph=False, files=[]):
     """
     generate p_inf of ER model along with the 1-p from [0,1]
 
@@ -38,11 +37,10 @@ def generate_pinf_ER(n, k, t=5, hasGraph = False, files=[]):
         print("...Interdependent Graph Generate Done!", time)
     # g1 = nx.gnp_random_graph(n, k/n)
     # g2 = nx.gnp_random_graph(n, k/n)
-    
+
     p_infs = []
 
-    ps = np.linspace(0.5,0.9,10)
-
+    ps = np.linspace(0.3, 1.0, 10)
 
     for p in tqdm(ps):
         print("P(success) = ", p)
@@ -53,6 +51,7 @@ def generate_pinf_ER(n, k, t=5, hasGraph = False, files=[]):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
             p_inf = compute_pinf(G_att, G_int)
+            breakpoint()
             mean_p_inf += p_inf
         p_infs.append(mean_p_inf / t)
     time = datetime.now() - start
@@ -109,9 +108,9 @@ def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
     return ps, np.array(p_infs)
 
 
-def generate_pinf_real(n_file, e_file, edges_crosslayer, order = ['metro','train'],t=50):
+def generate_pinf_real(n_file, e_file, edges_crosslayer, order=['metro', 'train'], t=50):
     start = datetime.now()
-    
+
     g1, df_n_metro, df_e_metro = gen_rand.paris_GenTranspNet(n_file, e_file, order[0], 1)
     g2, df_n_train, df_e_train = gen_rand.paris_GenTranspNet(n_file, e_file, order[1], 2)
 
@@ -131,7 +130,6 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, order = ['metro','train
         mean_p_inf_layer1 = 0
         mean_p_inf_layer2 = 0
 
-
         start = datetime.now()
         for i in range(t):
             # attack G with different p and compute p_inf
@@ -139,8 +137,8 @@ def generate_pinf_real(n_file, e_file, edges_crosslayer, order = ['metro','train
             G_casc, gcas1, gcas2 = att.cascade_rec(G_int, g1, g2, 1, False)
             comp_set = list(nx.connected_components(G_casc))
             giant_comp = max(comp_set, key=len)
-            
-            p_inf,p_inf_layer1, p_inf_layer2 = compute_pinf(G_att, G_int, mut=len(giant_comp))
+
+            p_inf, p_inf_layer1, p_inf_layer2 = compute_pinf(G_att, G_int, mut=len(giant_comp))
 
             mean_p_inf += p_inf
             mean_p_inf_layer1 += p_inf_layer1
@@ -196,12 +194,13 @@ def compute_pinf(G_att, G_init, mut=None):
 
     comp_set = list(nx.connected_components(G_att))
     giant_comp = max(comp_set, key=len)
-    layer1, layer2 = giant_layercount(G_att,giant_comp) # count layer1 and layer2 in Giant Component after cascading.
+    layer1, layer2 = giant_layercount(G_att, giant_comp)  # count layer1 and layer2 in Giant Component after cascading.
     print("giant comp_set layer count: ", layer1, layer2, len(giant_comp))
-    
+
     comp_set_init = list(nx.connected_components(G_init))
     giant_comp_init = max(comp_set_init, key=len)
-    layer1_init, layer2_init = giant_layercount(G_init,giant_comp_init) # count layer1 and layer2 initial Giant Component
+    layer1_init, layer2_init = giant_layercount(G_init,
+                                                giant_comp_init)  # count layer1 and layer2 initial Giant Component
 
     p_inf = len(giant_comp) / len(giant_comp_init)
     p_inf_layer1 = layer1 / layer1_init
@@ -223,7 +222,7 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
     - p_theory: [float] theoretical value of p_c
 
     """
-    plt.figure(figsize=(10,7))
+    plt.figure(figsize=(10, 7))
     plt.rcParams.update({'font.size': 14})
     color = iter(plt.cm.rainbow(np.linspace(0.0, 1, len(results))))
     marker = ['o', 's', 'D', 'v']
@@ -232,7 +231,7 @@ def plot_pinf(results, k=1, xlim=None, labels=None, path=None, p_theory=False, r
         pks = res[0] * k
         p_infs = res[1]
 
-        plt.plot(pks, p_infs, c=next(color), linewidth=2, marker = marker[i], mfc = "None")
+        plt.plot(pks, p_infs, c=next(color), linewidth=2, marker=marker[i], mfc="None")
 
     if p_theory:
         plt.vlines(2.4554, ymin=0, ymax=1, colors='k', linestyles='dashdot', label='$p_{c}$=2.4554/<k>')
@@ -260,7 +259,7 @@ def giant_layercount(G, giant_comp):
     layer_dict = dict(nx.get_node_attributes(G, "layer"))
     for node in giant_comp:
         layer = layer_dict[node]
-        if layer==1:
+        if layer == 1:
             layer1 += 1
         else:
             layer2 += 1

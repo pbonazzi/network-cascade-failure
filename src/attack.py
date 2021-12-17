@@ -48,11 +48,11 @@ def cascade_fail(G, g1, g2, target, verbose=False):
 
     """
     G2 = G.copy()
-    
+
     # if interconnected network
     # remove neighboring nodes from the other network
     interconnected = (len(g1.nodes()) != 0 and len(g2.nodes()) != 0)
-    if interconnected : 
+    if interconnected:
         num = G.nodes[target]['layer']
         foreign_nodes = foreign_neighbors(target, G)
         if foreign_nodes != set([]):
@@ -67,7 +67,7 @@ def cascade_fail(G, g1, g2, target, verbose=False):
 
     # remove target node
     G2.remove_node(target)
-    if interconnected : 
+    if interconnected:
         if num == 1:
             g1.remove_node(target)
         else:
@@ -113,15 +113,30 @@ def cascade_rec(G, g1, g2, counter, verbose):
         n2 = foreign_neighbors(b, G)
         if n1 == set([]) or n2 == set([]):
             continue
-        for comp in components:
-            if (n1.issubset(comp) and not n2.issubset(comp)) or (not n1.issubset(comp) and n2.issubset(comp)):
-                G.remove_edge(a, b)
-                g2.remove_edge(a, b)
-
-                removed = 1
-                if verbose:
-                    print('Removed', tuple((a, b)))
+        mutually = 0
+        for i, comp in enumerate(components):
+            """
+            set mutually connected components 
+            set of neighbour nodes n1
+            set of neighbour nodes n2
+            """
+            for neigh1 in n1:
+                for neigh2 in n2:
+                    if {neigh1}.issubset(comp) and {neigh2}.issubset(comp):
+                        mutually = 1
+                    if mutually == 1:
+                        break
+                if mutually == 1:
+                    break
+            if mutually == 1:
                 break
+        if mutually == 0:
+            G.remove_edge(a, b)
+            g2.remove_edge(a, b)
+
+            removed = 1
+            if verbose:
+                print('Removed', tuple((a, b)))
 
     # if we removed an edge, change perspective and look for others.
     if removed == 1:
@@ -158,10 +173,10 @@ def attack_network(G, g1=nx.Graph(), g2=nx.Graph(), p=0.5, verbose=True):
     # randomly select node to remove from network g1 (or A in paper)
     candidates = set()
     nodes = g1.nodes()
-    single = (len(nodes)==0)
-    if single : 
+    single = (len(nodes) == 0)
+    if single:
         nodes = G.nodes()
-        
+
     for node in nodes:
         if np.random.random() < 1 - p:
             candidates.add(node)
@@ -178,7 +193,7 @@ def attack_network(G, g1=nx.Graph(), g2=nx.Graph(), p=0.5, verbose=True):
 
     # recursively detect clusters and remove connecting links from neighboring network by switching g1=g2 and g2=g1
     # G3,g1,g2 = cascade_rec(G2,g1,g2,1,verbose)
-    if not single :
+    if not single:
         G, g1, g2 = cascade_rec(G, g1, g2, 1, verbose)
 
     return G
