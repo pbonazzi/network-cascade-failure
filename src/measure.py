@@ -51,7 +51,6 @@ def generate_pinf_ER(n, k, t=5, hasGraph=False, files=[]):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
             p_inf = compute_pinf(G_att, G_int)
-            breakpoint()
             mean_p_inf += p_inf
         p_infs.append(mean_p_inf / t)
     time = datetime.now() - start
