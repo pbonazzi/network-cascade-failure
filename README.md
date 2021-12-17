@@ -19,9 +19,8 @@ Hyeongkyun Kim 21-732-797
 Pietro Bonazzi 17-200-635
 Songyi Han 18-796-847
 
-:page_with_curl: Paper [on Github](./docs)    
-:pencil: Presentation [on Github](./docs)    
-:movie_camera: Video [on YouTube](./docs)   
+:page_with_curl: Paper [on Github](./docs/reports/report.pdf)    
+:pencil: Presentation [on Github](./docs/reports/presentation.pdf)
 
 ```
 @article{uzh2021transp,
