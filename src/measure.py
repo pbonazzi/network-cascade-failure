@@ -51,7 +51,7 @@ def generate_pinf_ER(n, k, t=5, hasGraph=False, files=[]):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
             p_inf = compute_pinf(G_att, G_int)
-            mean_p_inf += p_inf
+            mean_p_inf += p_inf[0]
         p_infs.append(mean_p_inf / t)
     time = datetime.now() - start
     print("...test: '%f' is Done!" % (p), time)
@@ -90,7 +90,7 @@ def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
         print("...Interdependent Graph Generate Done!", time)
 
     p_infs = []
-    ps = np.linspace(0.1, 0.9, 20)
+    ps = np.linspace(0.3, 0.9, 20)
 
     for p in ps:
         mean_p_inf = 0
@@ -99,7 +99,7 @@ def generate_pinf_SF(n=50, gamma=3, t=5, hasGraph=False, files=[]):
             # attack G with different p and compute p_inf
             G_att = att.attack_network(G_int, g1, g2, p, False)
             p_inf = compute_pinf(G_att, G_int)
-            mean_p_inf += p_inf
+            mean_p_inf += p_inf[0]
         p_infs.append(mean_p_inf / t)
         time = datetime.now() - start
         print("...test: '%f' is Done!" % (p), time)
