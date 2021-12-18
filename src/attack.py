@@ -76,7 +76,6 @@ def cascade_fail(G, g1, g2, target, verbose=False):
     return G2, g1, g2
 
 
-# %%
 def cascade_rec(G, g1, g2, counter, verbose):
     """Remove the edges of distant nodes .
 
@@ -84,6 +83,64 @@ def cascade_rec(G, g1, g2, counter, verbose):
     ----------
        Get the edges in g2. For each node of the edge pair, find their foreign neighbors.
        If nodes in these two sets are in different clusters in g1, remove the edge pair connection in g2 and G.
+
+    Parameters
+    ----------
+     Graph G , g1, g2 : networkx graphs
+     int counter :
+     bool verbose : visualize results
+
+    Return
+    ----------
+    Graph G2 : networkx graphs
+
+    """
+
+    removed = 0
+
+    # get the edges in g2
+    edges = set(g2.edges())
+
+    # get list of connected components for g1
+    components = list(nx.connected_components(g1))
+
+    # For each edge pair (a,b) find the foreign neighbors of node a and b.
+    # If these neighbors are in different clusters delete the edge (a,b).
+    while edges:
+        a, b = edges.pop()
+        n1 = foreign_neighbors(a, G)
+        n2 = foreign_neighbors(b, G)
+        if n1 == set([]) or n2 == set([]):
+            continue
+        for comp in components:
+            if (n1.issubset(comp) and not n2.issubset(comp)) or (not n1.issubset(comp) and n2.issubset(comp)):
+                G.remove_edge(a, b)
+                g2.remove_edge(a, b)
+
+                removed = 1
+                if verbose:
+                    print('Removed', tuple((a, b)))
+                    break
+
+    # if we removed an edge, change perspective and look for others.
+    if removed == 1:
+        cascade_rec(G, g2, g1, 1, verbose)
+
+    # if un successful, change perspective once again, but decrease counter by one to eventually stop recursion.
+    if removed == 0 and counter > 0:
+        cascade_rec(G, g2, g1, counter - 1, verbose)
+
+    return G, g1, g2
+
+
+# %%
+def cascade_rec_optional(G, g1, g2, counter, verbose):
+    """Invented method to remove edges in Stage 2,3.
+
+    Process
+    ----------
+       Get the edges in g2. For each node of the edge pair, find their foreign neighbors.
+       If at least one node for each of these two sets are in the same clusters in g1, maintain the pair connection in g2 and G.
 
     Parameters
     ----------
